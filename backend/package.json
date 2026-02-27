@@ -1,0 +1,16 @@
+{
+  "name": "onesignal-identity-verification-backend",
+  "version": "1.0.0",
+  "description": "Mini backend to generate ES256 JWTs for OneSignal Identity Verification (run locally for testing)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
