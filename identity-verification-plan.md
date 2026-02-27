@@ -14,8 +14,18 @@ isProject: false
 | 2025-02-26 | **Step 2 done**: Backend JWT generation added. Created `backend/` with `package.json` (express, jsonwebtoken, dotenv, cors), `index.js` (POST /auth/token, POST /auth/login, POST /auth/refresh, GET /health; ES256 JWT signing with comments), `.env.example`. Updated root `.gitignore` with `backend/.env` and `backend/node_modules`. |
 | 2025-02-26 | OneSignal Flutter SDK updated from `^5.1.2` to `^5.4.1` in `pubspec.yaml`. |
 | 2025-02-26 | Plan saved as `identity-verification-plan.md` in project root. Progress log added. |
+| 2025-02-26 | **E-Commerce home (Figma replica):** Added separate page [lib/screens/ecommerce_home_page.dart](lib/screens/ecommerce_home_page.dart), linked from OneSignal page in [lib/main.dart](lib/main.dart). Replicated unlogged home from Figma: header "Mega Mall", search "Search Product Name", promo banner (Gatis Ongkir / Selama PPKM! / Periode Mei - Agustus 2021), Categories with See All (Foods, Gift, Fashion, Gadget, Comp), Featured Product with See All, Best Sellers with See All. Product cards use real images (Unsplash); Best Seller cards include rating (e.g. 4.6), review count (e.g. 86 Reviews), and options (three-dots). Bottom nav: HOME, WISHLIST, ORDER, LOGIN (outline icons, selected = blue with circular highlight). Figma design reference: see **Figma design reference** below. |
 
 **Next:** Step 3 – Add login UI in the app, call backend for JWT, then `OneSignal.loginWithJWT(externalId, jwt)`; add logout.
+
+---
+
+## Figma design reference
+
+- **Link:** [E-Commerce - Mobile Apps (Community)](https://www.figma.com/design/Rln7pVYbArGhZkyycrNnSK/E-Commerce---Mobile-Apps--Community-?node-id=0-1)
+- **File key:** `Rln7pVYbArGhZkyycrNnSK`
+- **Root node (full canvas):** `node-id=0-1` (use `0:1` in API)
+- **What was built from it:** E-Commerce home (unlogged state) – header, search bar, promo banner, Categories (circular icons), Featured Product (horizontal scroll, TMA-2 HD Wireless, Rp. 1.500.000 in red), Best Sellers (horizontal scroll, product cards with rating/reviews and options icon), bottom nav (HOME, WISHLIST, ORDER, LOGIN). Use this link to fetch more frames (e.g. specific screens) for design-to-code via Figma MCP.
 
 ---
 

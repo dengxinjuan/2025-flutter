@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 // Include the OneSignal package
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 
+import 'screens/ecommerce_home_page.dart';
+
 const platform = MethodChannel('com.yourapp/notification');
 
 void main() {
@@ -151,6 +153,22 @@ void initState() {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Link to E-Commerce Home (separate page from Figma design)
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (context) => const EcommerceHomePage(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.shopping_bag_outlined),
+                label: const Text('Open E-Commerce Home'),
+              ),
+            ),
+            const SizedBox(height: 20),
             const Text("🔔 OneSignal Info", style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             Text("👤 OneSignal ID:\n${_userId ?? "Loading..."}"),
