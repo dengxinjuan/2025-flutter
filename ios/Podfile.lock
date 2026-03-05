@@ -1,11 +1,11 @@
 PODS:
   - Flutter (1.0.0)
-  - onesignal_flutter (5.3.0):
+  - onesignal_flutter (5.3.4):
     - Flutter
-    - OneSignalXCFramework (= 5.2.10)
-  - OneSignalXCFramework (5.2.10):
-    - OneSignalXCFramework/OneSignalComplete (= 5.2.10)
-  - OneSignalXCFramework/OneSignal (5.2.10):
+    - OneSignalXCFramework (= 5.4.1)
+  - OneSignalXCFramework (5.4.1):
+    - OneSignalXCFramework/OneSignalComplete (= 5.4.1)
+  - OneSignalXCFramework/OneSignal (5.4.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalExtension
     - OneSignalXCFramework/OneSignalLiveActivities
@@ -13,38 +13,38 @@ PODS:
     - OneSignalXCFramework/OneSignalOSCore
     - OneSignalXCFramework/OneSignalOutcomes
     - OneSignalXCFramework/OneSignalUser
-  - OneSignalXCFramework/OneSignalComplete (5.2.10):
+  - OneSignalXCFramework/OneSignalComplete (5.4.1):
     - OneSignalXCFramework/OneSignal
     - OneSignalXCFramework/OneSignalInAppMessages
     - OneSignalXCFramework/OneSignalLocation
-  - OneSignalXCFramework/OneSignalCore (5.2.10)
-  - OneSignalXCFramework/OneSignalExtension (5.2.10):
+  - OneSignalXCFramework/OneSignalCore (5.4.1)
+  - OneSignalXCFramework/OneSignalExtension (5.4.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalOutcomes
-  - OneSignalXCFramework/OneSignalInAppMessages (5.2.10):
+  - OneSignalXCFramework/OneSignalInAppMessages (5.4.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalNotifications
     - OneSignalXCFramework/OneSignalOSCore
     - OneSignalXCFramework/OneSignalOutcomes
     - OneSignalXCFramework/OneSignalUser
-  - OneSignalXCFramework/OneSignalLiveActivities (5.2.10):
+  - OneSignalXCFramework/OneSignalLiveActivities (5.4.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalOSCore
     - OneSignalXCFramework/OneSignalUser
-  - OneSignalXCFramework/OneSignalLocation (5.2.10):
+  - OneSignalXCFramework/OneSignalLocation (5.4.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalNotifications
     - OneSignalXCFramework/OneSignalOSCore
     - OneSignalXCFramework/OneSignalUser
-  - OneSignalXCFramework/OneSignalNotifications (5.2.10):
+  - OneSignalXCFramework/OneSignalNotifications (5.4.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalExtension
     - OneSignalXCFramework/OneSignalOutcomes
-  - OneSignalXCFramework/OneSignalOSCore (5.2.10):
+  - OneSignalXCFramework/OneSignalOSCore (5.4.1):
     - OneSignalXCFramework/OneSignalCore
-  - OneSignalXCFramework/OneSignalOutcomes (5.2.10):
+  - OneSignalXCFramework/OneSignalOutcomes (5.4.1):
     - OneSignalXCFramework/OneSignalCore
-  - OneSignalXCFramework/OneSignalUser (5.2.10):
+  - OneSignalXCFramework/OneSignalUser (5.4.1):
     - OneSignalXCFramework/OneSignalCore
     - OneSignalXCFramework/OneSignalNotifications
     - OneSignalXCFramework/OneSignalOSCore
@@ -67,8 +67,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  onesignal_flutter: c4442bab25faaf3a3ab77cdcd33f4507f10b05b8
-  OneSignalXCFramework: 1a3b28dfbff23aabce585796d23c1bef37772774
+  onesignal_flutter: d706835865d1adf2f03afc7c7b6d237494e693e3
+  OneSignalXCFramework: 0b85a8d949247f80809a9d5598200cc263591129
 
 PODFILE CHECKSUM: 0fa0248962654a30d6cf0366357793685ecd6b3a
 

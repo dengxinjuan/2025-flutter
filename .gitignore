@@ -47,3 +47,5 @@ app.*.map.json
 # Backend (OneSignal Identity Verification JWT server)
 backend/.env
 backend/node_modules
+backend/onesignal-prime256v1-private-key.pem
+*.pem
