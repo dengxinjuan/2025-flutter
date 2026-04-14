@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String name;
@@ -574,10 +575,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Future<void> _handleNotifyMe() async {
     setState(() => _notifyLoading = true);
     final sku = widget.sku.isNotEmpty ? widget.sku : widget.name.toLowerCase().replaceAll(' ', '_');
+
+    // Ensure user has a stable external_id — generate once and persist it
+    final prefs = await SharedPreferences.getInstance();
+    String? persistedId = prefs.getString('onesignal_external_id');
+    if (persistedId == null || persistedId.isEmpty) {
+      persistedId = 'user_${DateTime.now().millisecondsSinceEpoch}';
+      await prefs.setString('onesignal_external_id', persistedId);
+    }
+    final existingId = await OneSignal.User.getExternalId();
+    if (existingId != persistedId) {
+      await OneSignal.login(persistedId);
+      print('🔑 [Auth] Logged in as: $persistedId');
+    }
+
     await OneSignal.User.addTags({
       'availability': 'notify_me_requested',
       'product_name': sku,
     });
+    try {
+      await OneSignal.User.trackEvent('notify_me_requested', {'sku': sku});
+      print('✅ [trackEvent] notify_me_requested fired, sku=$sku');
+    } catch (e) {
+      print('❌ [trackEvent] failed: $e');
+    }
     setState(() {
       _notifyRequested = true;
       _notifyLoading = false;

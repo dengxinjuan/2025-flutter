@@ -18,6 +18,7 @@ void main() {
 
   runApp(const MyApp());
 
+  OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
   OneSignal.initialize(kOneSignalAppId);
 
   OneSignal.Notifications.addForegroundWillDisplayListener((event) {
@@ -31,7 +32,7 @@ void main() {
     print("🔔 [Click] Additional data: ${event.notification.additionalData}");
   });
 
-  OneSignal.Notifications.requestPermission(false);
+  OneSignal.Notifications.requestPermission(true);
 }
 
 class MyApp extends StatelessWidget {
@@ -44,7 +45,63 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'OneSignal testing!'),
+      home: const RootPage(),
+    );
+  }
+}
+
+/// Root swipeable container: swipe left = E-Commerce, swipe right = Debug.
+class RootPage extends StatefulWidget {
+  const RootPage({super.key});
+
+  @override
+  State<RootPage> createState() => _RootPageState();
+}
+
+class _RootPageState extends State<RootPage> {
+  final PageController _pageController = PageController(initialPage: 1);
+  int _currentPage = 1; // 0 = Debug, 1 = E-Commerce
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        PageView(
+          controller: _pageController,
+          onPageChanged: (i) => setState(() => _currentPage = i),
+          children: const [
+            MyHomePage(title: 'Debug'),
+            EcommerceHomePage(),
+          ],
+        ),
+        // Swipe indicator dots
+        Positioned(
+          top: 52,
+          left: 0,
+          right: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(2, (i) => AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              width: _currentPage == i ? 16 : 6,
+              height: 6,
+              decoration: BoxDecoration(
+                color: _currentPage == i
+                    ? Colors.white
+                    : Colors.white.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(3),
+              ),
+            )),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -143,19 +200,9 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (context) => const EcommerceHomePage(),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.shopping_bag_outlined),
-                label: const Text('Open E-Commerce Home'),
-              ),
+            const Text(
+              '← Swipe right to go to E-Commerce',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 20),
             const Text("🔔 OneSignal Info", style: TextStyle(fontWeight: FontWeight.bold)),

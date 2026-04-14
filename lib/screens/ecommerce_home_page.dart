@@ -401,6 +401,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                 name: p['name'] as String,
                 price: p['price'] as String,
                 imageUrl: p['imageUrl'] as String,
+                isComingSoon: p['isComingSoon'] as bool? ?? false,
               ),
             ),
           );
@@ -442,6 +443,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                 imageUrl: p['imageUrl'] as String,
                 rating: (p['rating'] as num).toDouble(),
                 reviewCount: p['reviews'] as int,
+                isComingSoon: p['isComingSoon'] as bool? ?? false,
               ),
             ),
           );
@@ -523,6 +525,7 @@ class _BestSellerCard extends StatelessWidget {
   final String imageUrl;
   final double rating;
   final int reviewCount;
+  final bool isComingSoon;
 
   const _BestSellerCard({
     required this.name,
@@ -530,6 +533,7 @@ class _BestSellerCard extends StatelessWidget {
     required this.imageUrl,
     required this.rating,
     required this.reviewCount,
+    this.isComingSoon = false,
   });
 
   @override
@@ -574,6 +578,26 @@ class _BestSellerCard extends StatelessWidget {
                   ),
                 ),
               ),
+              if (isComingSoon)
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE65100),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      'Coming Soon',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               Positioned(
                 bottom: 8,
                 right: 8,
@@ -648,11 +672,13 @@ class _ProductCard extends StatelessWidget {
   final String name;
   final String price;
   final String imageUrl;
+  final bool isComingSoon;
 
   const _ProductCard({
     required this.name,
     required this.price,
     required this.imageUrl,
+    this.isComingSoon = false,
   });
 
   @override
@@ -673,27 +699,51 @@ class _ProductCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    color: Colors.grey.shade100,
-                    child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                  );
-                },
-                errorBuilder: (_, __, ___) => Container(
-                  color: Colors.grey.shade200,
-                  child: const Icon(Icons.image_not_supported_outlined, size: 40, color: Colors.grey),
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: Colors.grey.shade100,
+                        child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                      );
+                    },
+                    errorBuilder: (_, __, ___) => Container(
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.image_not_supported_outlined, size: 40, color: Colors.grey),
+                    ),
+                  ),
                 ),
               ),
-            ),
+              if (isComingSoon)
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE65100),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      'Coming Soon',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.all(12),
