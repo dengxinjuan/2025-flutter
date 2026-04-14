@@ -97,6 +97,113 @@ app.get('/health', (req, res) => {
   res.json({ ok: true, appId: APP_ID ? 'set' : 'missing', privateKey: PRIVATE_KEY_PEM ? 'set' : 'missing' });
 });
 
+// ----- OneSignal REST API helpers -----
+const REST_API_KEY = process.env.ONESIGNAL_REST_API_KEY;
+const OS_API_BASE = 'https://api.onesignal.com';
+
+/**
+ * POST /notify-me
+ * Called when user taps "Notify Me When Available" in the app.
+ * Sets OneSignal tags: availability=notify_me_requested, product_name=<sku>
+ * Body: { externalId, sku, productName }
+ */
+app.post('/notify-me', async (req, res) => {
+  try {
+    const { externalId, sku, productName } = req.body || {};
+    if (!externalId || !sku) {
+      return res.status(400).json({ error: 'externalId and sku are required' });
+    }
+    if (!REST_API_KEY) {
+      return res.status(500).json({ error: 'ONESIGNAL_REST_API_KEY not set in .env' });
+    }
+
+    // Set tags on the user via OneSignal REST API
+    const tagRes = await fetch(`${OS_API_BASE}/apps/${APP_ID}/users/by/external_id/${encodeURIComponent(externalId)}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Key ${REST_API_KEY}`,
+      },
+      body: JSON.stringify({
+        properties: {
+          tags: {
+            availability: 'notify_me_requested',
+            [`product_name`]: sku,
+          },
+        },
+      }),
+    });
+
+    if (!tagRes.ok) {
+      const errBody = await tagRes.text();
+      console.error('OneSignal tag error:', errBody);
+      return res.status(502).json({ error: 'Failed to set OneSignal tags', detail: errBody });
+    }
+
+    console.log(`✅ [notify-me] Tagged ${externalId} for SKU: ${sku}`);
+    res.json({ success: true, externalId, sku });
+  } catch (err) {
+    console.error('/notify-me error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /simulate-restock
+ * Simulates a restock event — sends "Buy Now" push to all users tagged
+ * with availability=notify_me_requested AND product_name=<sku>.
+ * Body: { sku, productName, price, imageUrl }
+ */
+app.post('/simulate-restock', async (req, res) => {
+  try {
+    const { sku, productName, price, imageUrl } = req.body || {};
+    if (!sku || !productName) {
+      return res.status(400).json({ error: 'sku and productName are required' });
+    }
+    if (!REST_API_KEY) {
+      return res.status(500).json({ error: 'ONESIGNAL_REST_API_KEY not set in .env' });
+    }
+
+    const notifRes = await fetch(`${OS_API_BASE}/notifications`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Key ${REST_API_KEY}`,
+      },
+      body: JSON.stringify({
+        app_id: APP_ID,
+        filters: [
+          { field: 'tag', key: 'availability', relation: '=', value: 'notify_me_requested' },
+          { operator: 'AND' },
+          { field: 'tag', key: 'product_name', relation: '=', value: sku },
+        ],
+        target_channel: 'push',
+        headings: { en: `${productName} is back in stock! 🎉` },
+        contents: { en: `Tap to buy now before it sells out again.` },
+        big_picture: imageUrl || '',
+        url: 'crocs://product/' + sku,
+        custom_data: {
+          saved: [{ product_name: productName, price: price || '', image_url: imageUrl || '' }],
+          sku,
+          type: 'restock',
+        },
+      }),
+    });
+
+    const notifBody = await notifRes.json();
+    if (!notifRes.ok) {
+      console.error('OneSignal push error:', notifBody);
+      return res.status(502).json({ error: 'Failed to send push', detail: notifBody });
+    }
+
+    console.log(`🚀 [simulate-restock] Push sent for SKU: ${sku}`, notifBody);
+    res.json({ success: true, sku, notificationId: notifBody.id });
+  } catch (err) {
+    console.error('/simulate-restock error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ----- Start server -----
 app.listen(PORT, () => {
   if (!APP_ID || !getPrivateKey()) {

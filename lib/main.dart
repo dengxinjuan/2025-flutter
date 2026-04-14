@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'config.dart';
 import 'screens/ecommerce_home_page.dart';
 import 'screens/login_screen.dart';
 
@@ -17,7 +18,7 @@ void main() {
 
   runApp(const MyApp());
 
-  OneSignal.initialize("db231987-4182-42ba-a4b2-638cf90b29f6");
+  OneSignal.initialize(kOneSignalAppId);
 
   OneSignal.Notifications.addForegroundWillDisplayListener((event) {
     print("🔔 [Foreground] Notification will display: ${event.notification.jsonRepresentation()}");

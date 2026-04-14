@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'product_detail_page.dart';
 
 /// E-Commerce Home (unlogged) – replica of Figma design from screenshot.
 /// Header (Mega Mall blue), search ("Search Product Name"), promo banner (Gatis Ongkir),
@@ -22,22 +23,34 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     {'label': 'Comp', 'icon': Icons.computer, 'color': Color(0xFF4CAF50)},
   ];
 
-  // Featured products: TMA-2 HD Wireless, real headphone photos
+  // Featured products: Crocs collection
   static const List<Map<String, dynamic>> _featuredProducts = [
     {
-      'name': 'TMA-2 HD Wireless',
-      'price': 'Rp. 1.500.000',
-      'imageUrl': 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
+      'name': 'Crocs Classic Clog',
+      'price': 'Rp. 599.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+      'rating': 4.8,
+      'reviews': 312,
+      'sku': 'classic_clog',
+      'isComingSoon': false,
     },
     {
-      'name': 'TMA-2 HD Wireless',
-      'price': 'Rp. 1.500.000',
-      'imageUrl': 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400',
+      'name': 'Crocs Pink Edition',
+      'price': 'Rp. 699.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400',
+      'rating': 4.9,
+      'reviews': 0,
+      'sku': 'pink_clogs',
+      'isComingSoon': true,
     },
     {
-      'name': 'TMA-2 HD Wireless',
-      'price': 'Rp. 1.500.000',
-      'imageUrl': 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400',
+      'name': 'Crocs Literide Pacer',
+      'price': 'Rp. 899.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
+      'rating': 4.7,
+      'reviews': 245,
+      'sku': 'literide_pacer',
+      'isComingSoon': false,
     },
   ];
 
@@ -45,49 +58,61 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   static const String kBannerImageUrl =
       'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800';
 
-  // Best Sellers: more products with rating and options (matches screenshot)
+  // Best Sellers: Crocs products
   static const List<Map<String, dynamic>> _bestSellers = [
     {
-      'name': 'TMA-2 HD Wireless',
-      'price': 'Rp. 1.500.000',
-      'imageUrl': 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
-      'rating': 4.6,
-      'reviews': 86,
-    },
-    {
-      'name': 'TMA-2 HD Wireless',
-      'price': 'Rp. 1.500.000',
-      'imageUrl': 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400',
-      'rating': 4.6,
-      'reviews': 86,
-    },
-    {
-      'name': 'Cordless Drill Pro',
-      'price': 'Rp. 899.000',
-      'imageUrl': 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=400',
+      'name': 'Crocs Classic Clog',
+      'price': 'Rp. 599.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
       'rating': 4.8,
-      'reviews': 124,
+      'reviews': 312,
+      'sku': 'classic_clog',
+      'isComingSoon': false,
     },
     {
-      'name': 'Wireless Earbuds',
-      'price': 'Rp. 649.000',
-      'imageUrl': 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400',
-      'rating': 4.5,
-      'reviews': 72,
+      'name': 'Crocs Pink Edition',
+      'price': 'Rp. 699.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400',
+      'rating': 4.9,
+      'reviews': 0,
+      'sku': 'pink_clogs',
+      'isComingSoon': true,
     },
     {
-      'name': 'Smart Watch Series',
-      'price': 'Rp. 2.199.000',
-      'imageUrl': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
+      'name': 'Crocs Literide Pacer',
+      'price': 'Rp. 899.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
       'rating': 4.7,
-      'reviews': 203,
+      'reviews': 245,
+      'sku': 'literide_pacer',
+      'isComingSoon': false,
     },
     {
-      'name': 'Bluetooth Speaker',
+      'name': 'Crocs Baya Sandal',
       'price': 'Rp. 449.000',
-      'imageUrl': 'https://images.unsplash.com/photo-1545127398-14699f92334b?w=400',
-      'rating': 4.4,
-      'reviews': 58,
+      'imageUrl': 'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=400',
+      'rating': 4.5,
+      'reviews': 167,
+      'sku': 'baya_sandal',
+      'isComingSoon': false,
+    },
+    {
+      'name': 'Crocs Blue Clogs',
+      'price': 'Rp. 649.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400',
+      'rating': 4.7,
+      'reviews': 0,
+      'sku': 'blue_clogs',
+      'isComingSoon': true,
+    },
+    {
+      'name': 'Crocs Kids Classic',
+      'price': 'Rp. 349.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?w=400',
+      'rating': 4.8,
+      'reviews': 289,
+      'sku': 'kids_classic',
+      'isComingSoon': false,
     },
   ];
 
@@ -354,13 +379,29 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
         itemCount: _featuredProducts.length,
         itemBuilder: (context, index) {
           final p = _featuredProducts[index];
-          return Container(
-            width: 160,
-            margin: EdgeInsets.only(right: index < _featuredProducts.length - 1 ? 14 : 0),
-            child: _ProductCard(
-              name: p['name'] as String,
-              price: p['price'] as String,
-              imageUrl: p['imageUrl'] as String,
+          return GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProductDetailPage(
+                  name: p['name'] as String,
+                  price: p['price'] as String,
+                  imageUrl: p['imageUrl'] as String,
+                  rating: (p['rating'] as num).toDouble(),
+                  reviewCount: p['reviews'] as int,
+                  sku: p['sku'] as String? ?? '',
+                  isComingSoon: p['isComingSoon'] as bool? ?? false,
+                ),
+              ),
+            ),
+            child: Container(
+              width: 160,
+              margin: EdgeInsets.only(right: index < _featuredProducts.length - 1 ? 14 : 0),
+              child: _ProductCard(
+                name: p['name'] as String,
+                price: p['price'] as String,
+                imageUrl: p['imageUrl'] as String,
+              ),
             ),
           );
         },
@@ -377,15 +418,31 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
         itemCount: _bestSellers.length,
         itemBuilder: (context, index) {
           final p = _bestSellers[index];
-          return Container(
-            width: 168,
-            margin: EdgeInsets.only(right: index < _bestSellers.length - 1 ? 14 : 0),
-            child: _BestSellerCard(
-              name: p['name'] as String,
-              price: p['price'] as String,
-              imageUrl: p['imageUrl'] as String,
-              rating: (p['rating'] as num).toDouble(),
-              reviewCount: p['reviews'] as int,
+          return GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProductDetailPage(
+                  name: p['name'] as String,
+                  price: p['price'] as String,
+                  imageUrl: p['imageUrl'] as String,
+                  rating: (p['rating'] as num).toDouble(),
+                  reviewCount: p['reviews'] as int,
+                  sku: p['sku'] as String? ?? '',
+                  isComingSoon: p['isComingSoon'] as bool? ?? false,
+                ),
+              ),
+            ),
+            child: Container(
+              width: 168,
+              margin: EdgeInsets.only(right: index < _bestSellers.length - 1 ? 14 : 0),
+              child: _BestSellerCard(
+                name: p['name'] as String,
+                price: p['price'] as String,
+                imageUrl: p['imageUrl'] as String,
+                rating: (p['rating'] as num).toDouble(),
+                reviewCount: p['reviews'] as int,
+              ),
             ),
           );
         },

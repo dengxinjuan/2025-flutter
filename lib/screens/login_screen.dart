@@ -9,7 +9,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _authService = OneSignalAuthService();
+  final _authService = OneSignalAuthService.instance;
   final _userIdController = TextEditingController(text: 'user-123');
   bool _loading = false;
   String? _statusMessage;

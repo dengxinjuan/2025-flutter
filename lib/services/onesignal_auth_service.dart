@@ -9,6 +9,9 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 const String _backendUrl = 'http://localhost:3000';
 
 class OneSignalAuthService {
+  static final OneSignalAuthService instance = OneSignalAuthService._();
+  OneSignalAuthService._();
+
   String? _externalId;
 
   String? get externalId => _externalId;

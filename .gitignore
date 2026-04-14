@@ -49,3 +49,6 @@ backend/.env
 backend/node_modules
 backend/onesignal-prime256v1-private-key.pem
 *.pem
+
+# App config with secrets
+lib/config.dart
