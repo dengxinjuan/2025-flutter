@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../providers/cart_provider.dart';
+import 'cart_page.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String name;
@@ -42,21 +45,21 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   static const _crocs = [
     {
       'name': 'Crocs Classic Clog',
-      'price': 'Rp. 599.000',
+      'price': '\$37.99',
       'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
       'rating': 4.8,
       'reviews': 312,
     },
     {
       'name': 'Crocs Bayaband Clog',
-      'price': 'Rp. 649.000',
+      'price': '\$40.99',
       'imageUrl': 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400',
       'rating': 4.6,
       'reviews': 198,
     },
     {
       'name': 'Crocs Literide Pacer',
-      'price': 'Rp. 899.000',
+      'price': '\$55.99',
       'imageUrl': 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
       'rating': 4.7,
       'reviews': 245,
@@ -157,9 +160,41 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 onPressed: () {},
                 icon: const Icon(Icons.refresh, size: 20, color: _navyBlack),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.shopping_cart_outlined, size: 20, color: _navyBlack),
+              Consumer<CartProvider>(
+                builder: (context, cart, _) => Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CartPage()),
+                      ),
+                      icon: const Icon(Icons.shopping_cart_outlined, size: 20, color: _navyBlack),
+                    ),
+                    if (cart.itemCount > 0)
+                      Positioned(
+                        top: 6,
+                        right: 6,
+                        child: Container(
+                          padding: const EdgeInsets.all(3),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFFE3A30),
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                          child: Text(
+                            cart.itemCount > 99 ? '99+' : '${cart.itemCount}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -195,7 +230,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             bottom: 12,
             left: 15,
             child: Text(
-              '1/5 Foto',
+              '1/5 Photos',
               style: TextStyle(
                 fontSize: 14,
                 color: _navyBlack.withOpacity(0.8),
@@ -704,7 +739,22 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             const SizedBox(width: 15),
             Expanded(
               child: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  context.read<CartProvider>().addItem(
+                    sku: widget.sku.isNotEmpty ? widget.sku : widget.name,
+                    name: widget.name,
+                    price: widget.price,
+                    imageUrl: widget.imageUrl,
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${widget.name} added to cart'),
+                      backgroundColor: _blueOcean,
+                      behavior: SnackBarBehavior.floating,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                },
                 child: Container(
                   height: 50,
                   decoration: BoxDecoration(

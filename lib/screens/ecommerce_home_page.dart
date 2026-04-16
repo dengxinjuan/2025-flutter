@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/cart_provider.dart';
+import 'cart_page.dart';
 import 'product_detail_page.dart';
 import 'category_products_page.dart';
 
@@ -28,7 +31,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   static const List<Map<String, dynamic>> _featuredProducts = [
     {
       'name': 'Crocs Classic Clog',
-      'price': 'Rp. 599.000',
+      'price': '\$37.99',
       'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
       'rating': 4.8,
       'reviews': 312,
@@ -37,7 +40,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Pink Edition',
-      'price': 'Rp. 699.000',
+      'price': '\$43.99',
       'imageUrl': 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400',
       'rating': 4.9,
       'reviews': 0,
@@ -46,7 +49,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Literide Pacer',
-      'price': 'Rp. 899.000',
+      'price': '\$55.99',
       'imageUrl': 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
       'rating': 4.7,
       'reviews': 245,
@@ -55,7 +58,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Bayaband Clog',
-      'price': 'Rp. 549.000',
+      'price': '\$34.99',
       'imageUrl': 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400',
       'rating': 4.6,
       'reviews': 198,
@@ -64,7 +67,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Bistro Clog',
-      'price': 'Rp. 749.000',
+      'price': '\$46.99',
       'imageUrl': 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400',
       'rating': 4.5,
       'reviews': 134,
@@ -81,7 +84,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   static const List<Map<String, dynamic>> _bestSellers = [
     {
       'name': 'Crocs Classic Clog',
-      'price': 'Rp. 599.000',
+      'price': '\$37.99',
       'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
       'rating': 4.8,
       'reviews': 312,
@@ -90,7 +93,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Pink Edition',
-      'price': 'Rp. 699.000',
+      'price': '\$43.99',
       'imageUrl': 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400',
       'rating': 4.9,
       'reviews': 0,
@@ -99,7 +102,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Literide Pacer',
-      'price': 'Rp. 899.000',
+      'price': '\$55.99',
       'imageUrl': 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
       'rating': 4.7,
       'reviews': 245,
@@ -108,7 +111,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Baya Sandal',
-      'price': 'Rp. 449.000',
+      'price': '\$27.99',
       'imageUrl': 'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=400',
       'rating': 4.5,
       'reviews': 167,
@@ -117,7 +120,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Blue Clogs',
-      'price': 'Rp. 649.000',
+      'price': '\$40.99',
       'imageUrl': 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400',
       'rating': 4.7,
       'reviews': 0,
@@ -126,7 +129,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Kids Classic',
-      'price': 'Rp. 349.000',
+      'price': '\$21.99',
       'imageUrl': 'https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?w=400',
       'rating': 4.8,
       'reviews': 289,
@@ -135,7 +138,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Classic Tie-Dye',
-      'price': 'Rp. 799.000',
+      'price': '\$49.99',
       'imageUrl': 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400',
       'rating': 4.7,
       'reviews': 201,
@@ -144,7 +147,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Reviva Sandal',
-      'price': 'Rp. 499.000',
+      'price': '\$31.99',
       'imageUrl': 'https://images.unsplash.com/photo-1603487742131-4160ec999306?w=400',
       'rating': 4.5,
       'reviews': 112,
@@ -157,7 +160,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   static const List<Map<String, dynamic>> _newArrivals = [
     {
       'name': 'Crocs Echo Clog',
-      'price': 'Rp. 899.000',
+      'price': '\$55.99',
       'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
       'rating': 4.8,
       'reviews': 54,
@@ -166,7 +169,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Neo Puff Clog',
-      'price': 'Rp. 1.299.000',
+      'price': '\$81.99',
       'imageUrl': 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400',
       'rating': 4.9,
       'reviews': 28,
@@ -175,7 +178,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Getaway Flip',
-      'price': 'Rp. 449.000',
+      'price': '\$27.99',
       'imageUrl': 'https://images.unsplash.com/photo-1523779105320-d1cd346ff52b?w=400',
       'rating': 4.6,
       'reviews': 73,
@@ -184,7 +187,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Blue Clogs',
-      'price': 'Rp. 649.000',
+      'price': '\$40.99',
       'imageUrl': 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400',
       'rating': 4.7,
       'reviews': 0,
@@ -197,7 +200,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   static const List<Map<String, dynamic>> _topRated = [
     {
       'name': 'Crocs Literide 360',
-      'price': 'Rp. 999.000',
+      'price': '\$62.99',
       'imageUrl': 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
       'rating': 4.9,
       'reviews': 501,
@@ -206,7 +209,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Classic Lined',
-      'price': 'Rp. 799.000',
+      'price': '\$49.99',
       'imageUrl': 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400',
       'rating': 4.8,
       'reviews': 378,
@@ -215,7 +218,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Crocband Clog',
-      'price': 'Rp. 549.000',
+      'price': '\$34.99',
       'imageUrl': 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400',
       'rating': 4.7,
       'reviews': 422,
@@ -224,7 +227,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Classic Clog',
-      'price': 'Rp. 599.000',
+      'price': '\$37.99',
       'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
       'rating': 4.8,
       'reviews': 312,
@@ -237,8 +240,8 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   static const List<Map<String, dynamic>> _specialOffers = [
     {
       'name': 'Crocs Classic Clog',
-      'price': 'Rp. 449.000',
-      'originalPrice': 'Rp. 599.000',
+      'price': '\$27.99',
+      'originalPrice': '\$37.99',
       'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
       'rating': 4.8,
       'reviews': 312,
@@ -248,8 +251,8 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Baya Sandal',
-      'price': 'Rp. 299.000',
-      'originalPrice': 'Rp. 449.000',
+      'price': '\$18.99',
+      'originalPrice': '\$27.99',
       'imageUrl': 'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=400',
       'rating': 4.5,
       'reviews': 167,
@@ -259,8 +262,8 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     },
     {
       'name': 'Crocs Crocband Flip',
-      'price': 'Rp. 349.000',
-      'originalPrice': 'Rp. 499.000',
+      'price': '\$21.99',
+      'originalPrice': '\$31.99',
       'imageUrl': 'https://images.unsplash.com/photo-1523779105320-d1cd346ff52b?w=400',
       'rating': 4.6,
       'reviews': 89,
@@ -343,9 +346,41 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
             onPressed: () {},
             icon: const Icon(Icons.notifications_outlined, color: Color(0xFF333333)),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.shopping_cart_outlined, color: Color(0xFF333333)),
+          Consumer<CartProvider>(
+            builder: (context, cart, _) => Stack(
+              clipBehavior: Clip.none,
+              children: [
+                IconButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const CartPage()),
+                  ),
+                  icon: const Icon(Icons.shopping_cart_outlined, color: Color(0xFF333333)),
+                ),
+                if (cart.itemCount > 0)
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFE3A30),
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                      child: Text(
+                        cart.itemCount > 99 ? '99+' : '${cart.itemCount}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ],
       ),
@@ -426,7 +461,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      'Gatis Ongkir',
+                      'Free Shipping',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -435,7 +470,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                      'Selama PPKM!',
+                      'On All Orders!',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -444,7 +479,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Periode Mei - Agustus 2021',
+                      'Valid May - August 2025',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.white.withOpacity(0.9),
@@ -734,7 +769,16 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
               final item = items[index];
               final selected = _selectedNavIndex == index;
               return InkWell(
-                onTap: () => setState(() => _selectedNavIndex = index),
+                onTap: () {
+                  if (index == 2) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CartPage()),
+                    );
+                    return;
+                  }
+                  setState(() => _selectedNavIndex = index);
+                },
                 borderRadius: BorderRadius.circular(24),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -883,18 +927,6 @@ class _BestSellerCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              Positioned(
-                bottom: 8,
-                right: 8,
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.more_horiz, size: 22, color: Color(0xFF666666)),
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.white.withOpacity(0.9),
-                    padding: const EdgeInsets.all(6),
-                  ),
-                ),
-              ),
             ],
           ),
           Padding(

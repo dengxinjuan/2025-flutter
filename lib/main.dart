@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:provider/provider.dart';
 import 'config.dart';
+import 'providers/cart_provider.dart';
 import 'screens/ecommerce_home_page.dart';
 import 'screens/login_screen.dart';
 
@@ -40,12 +42,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'OneSignal Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    return ChangeNotifierProvider(
+      create: (_) => CartProvider(),
+      child: MaterialApp(
+        title: 'Mega Mall',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3669C9)),
+        ),
+        home: const RootPage(),
       ),
-      home: const RootPage(),
     );
   }
 }

@@ -7,7 +7,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
   'Fashion': [
     {
       'name': 'Crocs Classic Clog',
-      'price': 'Rp. 599.000',
+      'price': '\$37.99',
       'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
       'rating': 4.8,
       'reviews': 312,
@@ -16,7 +16,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Pink Edition',
-      'price': 'Rp. 699.000',
+      'price': '\$43.99',
       'imageUrl': 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400',
       'rating': 4.9,
       'reviews': 0,
@@ -25,7 +25,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Classic Tie-Dye',
-      'price': 'Rp. 799.000',
+      'price': '\$49.99',
       'imageUrl': 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400',
       'rating': 4.7,
       'reviews': 201,
@@ -34,7 +34,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Bayaband Clog',
-      'price': 'Rp. 549.000',
+      'price': '\$34.99',
       'imageUrl': 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400',
       'rating': 4.6,
       'reviews': 198,
@@ -43,7 +43,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Bistro Clog',
-      'price': 'Rp. 749.000',
+      'price': '\$46.99',
       'imageUrl': 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400',
       'rating': 4.5,
       'reviews': 134,
@@ -52,7 +52,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Literide Pacer',
-      'price': 'Rp. 899.000',
+      'price': '\$55.99',
       'imageUrl': 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
       'rating': 4.7,
       'reviews': 245,
@@ -61,7 +61,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Literide 360',
-      'price': 'Rp. 999.000',
+      'price': '\$62.99',
       'imageUrl': 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
       'rating': 4.9,
       'reviews': 501,
@@ -70,7 +70,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Echo Clog',
-      'price': 'Rp. 899.000',
+      'price': '\$55.99',
       'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
       'rating': 4.8,
       'reviews': 54,
@@ -79,7 +79,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Reviva Sandal',
-      'price': 'Rp. 499.000',
+      'price': '\$31.99',
       'imageUrl': 'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=400',
       'rating': 4.5,
       'reviews': 112,
@@ -88,7 +88,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Classic Lined',
-      'price': 'Rp. 799.000',
+      'price': '\$49.99',
       'imageUrl': 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400',
       'rating': 4.8,
       'reviews': 378,
@@ -97,7 +97,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Crocband Clog',
-      'price': 'Rp. 549.000',
+      'price': '\$34.99',
       'imageUrl': 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400',
       'rating': 4.7,
       'reviews': 422,
@@ -106,7 +106,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Getaway Flip',
-      'price': 'Rp. 449.000',
+      'price': '\$27.99',
       'imageUrl': 'https://images.unsplash.com/photo-1523779105320-d1cd346ff52b?w=400',
       'rating': 4.6,
       'reviews': 73,
@@ -115,7 +115,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Baya Sandal',
-      'price': 'Rp. 449.000',
+      'price': '\$27.99',
       'imageUrl': 'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=400',
       'rating': 4.5,
       'reviews': 167,
@@ -124,7 +124,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Classic Sandal',
-      'price': 'Rp. 399.000',
+      'price': '\$24.99',
       'imageUrl': 'https://images.unsplash.com/photo-1523779105320-d1cd346ff52b?w=400',
       'rating': 4.4,
       'reviews': 134,
@@ -133,7 +133,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Swiftwater Sandal',
-      'price': 'Rp. 549.000',
+      'price': '\$34.99',
       'imageUrl': 'https://images.unsplash.com/photo-1603487742131-4160ec999306?w=400',
       'rating': 4.6,
       'reviews': 98,
@@ -142,7 +142,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Crocband Flip',
-      'price': 'Rp. 399.000',
+      'price': '\$24.99',
       'imageUrl': 'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=400',
       'rating': 4.5,
       'reviews': 89,
@@ -151,7 +151,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Blue Clogs',
-      'price': 'Rp. 649.000',
+      'price': '\$40.99',
       'imageUrl': 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400',
       'rating': 4.7,
       'reviews': 0,
@@ -160,7 +160,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Neo Puff Clog',
-      'price': 'Rp. 1.299.000',
+      'price': '\$81.99',
       'imageUrl': 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400',
       'rating': 4.9,
       'reviews': 28,
@@ -169,7 +169,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Kids Classic',
-      'price': 'Rp. 349.000',
+      'price': '\$21.99',
       'imageUrl': 'https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?w=400',
       'rating': 4.8,
       'reviews': 289,
@@ -178,7 +178,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Leather Tote Bag',
-      'price': 'Rp. 450.000',
+      'price': '\$27.99',
       'imageUrl': 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400',
       'rating': 4.7,
       'reviews': 183,
@@ -187,7 +187,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Silk Scarf',
-      'price': 'Rp. 189.000',
+      'price': '\$11.99',
       'imageUrl': 'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=400',
       'rating': 4.5,
       'reviews': 97,
@@ -196,7 +196,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Sunglasses UV400',
-      'price': 'Rp. 299.000',
+      'price': '\$18.99',
       'imageUrl': 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400',
       'rating': 4.6,
       'reviews': 214,
@@ -209,7 +209,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
   'Foods': [
     {
       'name': 'Organic Apple Set',
-      'price': 'Rp. 45.000',
+      'price': '\$2.99',
       'imageUrl': 'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=400',
       'rating': 4.7,
       'reviews': 521,
@@ -218,7 +218,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Premium Coffee Beans',
-      'price': 'Rp. 189.000',
+      'price': '\$11.99',
       'imageUrl': 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400',
       'rating': 4.9,
       'reviews': 743,
@@ -227,7 +227,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Artisan Chocolate Box',
-      'price': 'Rp. 125.000',
+      'price': '\$7.99',
       'imageUrl': 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=400',
       'rating': 4.8,
       'reviews': 398,
@@ -236,7 +236,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Matcha Green Tea Set',
-      'price': 'Rp. 95.000',
+      'price': '\$5.99',
       'imageUrl': 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400',
       'rating': 4.6,
       'reviews': 267,
@@ -245,7 +245,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Fresh Fruit Basket',
-      'price': 'Rp. 199.000',
+      'price': '\$12.99',
       'imageUrl': 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400',
       'rating': 4.8,
       'reviews': 184,
@@ -254,7 +254,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Assorted Snack Box',
-      'price': 'Rp. 149.000',
+      'price': '\$9.99',
       'imageUrl': 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400',
       'rating': 4.5,
       'reviews': 312,
@@ -267,7 +267,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
   'Gift': [
     {
       'name': 'Crocs Gift Bundle',
-      'price': 'Rp. 899.000',
+      'price': '\$55.99',
       'imageUrl': 'https://images.unsplash.com/photo-1512909006721-3d6018887383?w=400',
       'rating': 4.9,
       'reviews': 87,
@@ -276,7 +276,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Jibbitz 5-Pack',
-      'price': 'Rp. 199.000',
+      'price': '\$12.99',
       'imageUrl': 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=400',
       'rating': 4.7,
       'reviews': 156,
@@ -285,7 +285,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Crocs Mini Charm Set',
-      'price': 'Rp. 149.000',
+      'price': '\$9.99',
       'imageUrl': 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=400',
       'rating': 4.6,
       'reviews': 203,
@@ -294,7 +294,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Luxury Gift Box',
-      'price': 'Rp. 249.000',
+      'price': '\$15.99',
       'imageUrl': 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400',
       'rating': 4.8,
       'reviews': 142,
@@ -303,7 +303,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Scented Candle Set',
-      'price': 'Rp. 179.000',
+      'price': '\$10.99',
       'imageUrl': 'https://images.unsplash.com/photo-1602928321679-560bb453f190?w=400',
       'rating': 4.7,
       'reviews': 319,
@@ -312,7 +312,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Fresh Flower Bouquet',
-      'price': 'Rp. 350.000',
+      'price': '\$21.99',
       'imageUrl': 'https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=400',
       'rating': 4.9,
       'reviews': 88,
@@ -325,7 +325,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
   'Gadget': [
     {
       'name': 'Wireless Earbuds Pro',
-      'price': 'Rp. 899.000',
+      'price': '\$55.99',
       'imageUrl': 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400',
       'rating': 4.8,
       'reviews': 634,
@@ -334,7 +334,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Smart Watch Series 5',
-      'price': 'Rp. 1.499.000',
+      'price': '\$93.99',
       'imageUrl': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
       'rating': 4.7,
       'reviews': 412,
@@ -343,7 +343,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Portable Power Bank',
-      'price': 'Rp. 349.000',
+      'price': '\$21.99',
       'imageUrl': 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400',
       'rating': 4.6,
       'reviews': 287,
@@ -352,7 +352,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Bluetooth Speaker',
-      'price': 'Rp. 699.000',
+      'price': '\$43.99',
       'imageUrl': 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400',
       'rating': 4.8,
       'reviews': 356,
@@ -361,7 +361,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Action Camera 4K',
-      'price': 'Rp. 1.299.000',
+      'price': '\$81.99',
       'imageUrl': 'https://images.unsplash.com/photo-1512790182412-b19e6d62bc39?w=400',
       'rating': 4.7,
       'reviews': 198,
@@ -370,7 +370,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Drone Mini Pro',
-      'price': 'Rp. 2.499.000',
+      'price': '\$154.99',
       'imageUrl': 'https://images.unsplash.com/photo-1579829366248-204fe8413f31?w=400',
       'rating': 4.6,
       'reviews': 143,
@@ -383,7 +383,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
   'Comp': [
     {
       'name': 'Laptop Stand Aluminium',
-      'price': 'Rp. 349.000',
+      'price': '\$21.99',
       'imageUrl': 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=400',
       'rating': 4.8,
       'reviews': 476,
@@ -392,7 +392,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Mechanical Keyboard',
-      'price': 'Rp. 899.000',
+      'price': '\$55.99',
       'imageUrl': 'https://images.unsplash.com/photo-1561112078-7d24e04c3407?w=400',
       'rating': 4.7,
       'reviews': 321,
@@ -401,7 +401,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Wireless Mouse',
-      'price': 'Rp. 279.000',
+      'price': '\$17.99',
       'imageUrl': 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400',
       'rating': 4.6,
       'reviews': 589,
@@ -410,7 +410,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'USB-C Hub 7-in-1',
-      'price': 'Rp. 449.000',
+      'price': '\$27.99',
       'imageUrl': 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400',
       'rating': 4.5,
       'reviews': 203,
@@ -419,7 +419,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Monitor 27" 4K',
-      'price': 'Rp. 4.999.000',
+      'price': '\$312.99',
       'imageUrl': 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=400',
       'rating': 4.8,
       'reviews': 167,
@@ -428,7 +428,7 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
     },
     {
       'name': 'Webcam HD 1080p',
-      'price': 'Rp. 599.000',
+      'price': '\$37.99',
       'imageUrl': 'https://images.unsplash.com/photo-1596742578443-7682ef5251cd?w=400',
       'rating': 4.6,
       'reviews': 234,

@@ -1,5 +1,5 @@
 # Full App Implementation Plan
-_Last updated: 2026-04-15_
+_Last updated: 2026-04-16_
 
 ## Current State
 | What exists | Status |
@@ -10,27 +10,25 @@ _Last updated: 2026-04-15_
 | "Notify Me" / Coming Soon flow (OneSignal) | ✅ Done |
 | Login screen (UI only) | ⚠️ UI only |
 | Node.js backend (JWT + notify-me + simulate-restock) | ✅ Done |
-| Bottom nav (UI only, no real navigation) | ⚠️ UI only |
-| Cart, Wishlist, Orders, Search, Checkout, Payment | ❌ Missing |
+| Cart (CartProvider + CartPage + Add to Cart wired) | ✅ Done |
+| Cart badge on header + ORDER tab navigation | ✅ Done |
+| All prices in USD, all UI text in English | ✅ Done |
+| Wishlist, Orders, Search, Checkout, Payment | ❌ Missing |
 
 ---
 
-## Phase 1 — State Management & Navigation (Foundation)
+## Phase 1 — State Management & Navigation (Foundation) ✅ COMPLETE
 Everything else depends on this being in place first.
 
-### 1.1 Add state management
-- Add `provider` or `riverpod` package
-- Create `CartProvider` — holds cart items, quantities, total price
-- Create `WishlistProvider` — holds favorited product SKUs
-- Create `AuthProvider` — holds current user, login/logout state
-- Wrap `MaterialApp` in `MultiProvider`
+### 1.1 Add state management ✅
+- Added `provider: ^6.1.2` package
+- Created `CartProvider` (lib/providers/cart_provider.dart) — holds cart items, quantities, USD total
+- Wrapped `MaterialApp` in `ChangeNotifierProvider`
 
-### 1.2 Wire up bottom navigation
-- HOME → `EcommerceHomePage` (already done)
-- WISHLIST → `WishlistPage` (new)
-- ORDER → `OrdersPage` (new)
-- LOGIN/ACCOUNT → `ProfilePage` or `LoginScreen`
-- Add cart badge counter on the cart icon in the header
+### 1.2 Wire up bottom navigation ✅ (partial)
+- ORDER tab → navigates to `CartPage` ✅
+- Cart badge counter on header icon (home + product detail pages) ✅
+- WISHLIST, LOGIN tabs — still UI only (Phase 2/4)
 
 ---
 
@@ -49,17 +47,18 @@ Everything else depends on this being in place first.
 
 ---
 
-## Phase 3 — Cart
-### 3.1 Add to Cart flow
-- "Add to Cart" button on `ProductDetailPage` adds item to `CartProvider`
-- Show snackbar confirmation
-- Cart icon in header shows badge with item count
+## Phase 3 — Cart ✅ COMPLETE
+### 3.1 Add to Cart flow ✅
+- "Add to Cart" button on `ProductDetailPage` wired to `CartProvider.addItem()`
+- Shows floating snackbar confirmation on add
+- Cart icon in header shows live red badge with item count
 
-### 3.2 Cart page
+### 3.2 Cart page ✅ (lib/screens/cart_page.dart)
 - List of cart items (image, name, price, quantity +/− controls)
-- Swipe to remove
-- Subtotal, tax, shipping estimate at bottom
-- "Proceed to Checkout" button
+- Swipe-to-delete with red background
+- Live item count + USD total at bottom
+- "Proceed to Checkout" button (coming soon snackbar — Phase 6)
+- "Clear" button with confirm dialog
 
 ---
 
@@ -183,9 +182,9 @@ Phase 9 (Notifications)  →  Phase 10 (Polish)
 ```
 
 ## Packages to add
-| Package | Purpose |
-|---|---|
-| `provider` or `flutter_riverpod` | State management |
+| Package | Purpose | Status |
+|---|---|---|
+| `provider` | State management | ✅ Added (v6.1.2) |
 | `go_router` | Declarative routing + deep links |
 | `cached_network_image` | Image caching |
 | `flutter_slidable` | Swipe-to-delete in cart |
