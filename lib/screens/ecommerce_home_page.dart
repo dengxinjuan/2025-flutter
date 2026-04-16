@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'product_detail_page.dart';
+import 'category_products_page.dart';
 
 /// E-Commerce Home (unlogged) – replica of Figma design from screenshot.
 /// Header (Mega Mall blue), search ("Search Product Name"), promo banner (Gatis Ongkir),
@@ -50,6 +51,24 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
       'rating': 4.7,
       'reviews': 245,
       'sku': 'literide_pacer',
+      'isComingSoon': false,
+    },
+    {
+      'name': 'Crocs Bayaband Clog',
+      'price': 'Rp. 549.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400',
+      'rating': 4.6,
+      'reviews': 198,
+      'sku': 'bayaband_clog',
+      'isComingSoon': false,
+    },
+    {
+      'name': 'Crocs Bistro Clog',
+      'price': 'Rp. 749.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400',
+      'rating': 4.5,
+      'reviews': 134,
+      'sku': 'bistro_clog',
       'isComingSoon': false,
     },
   ];
@@ -114,6 +133,141 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
       'sku': 'kids_classic',
       'isComingSoon': false,
     },
+    {
+      'name': 'Crocs Classic Tie-Dye',
+      'price': 'Rp. 799.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400',
+      'rating': 4.7,
+      'reviews': 201,
+      'sku': 'tiedye_clog',
+      'isComingSoon': false,
+    },
+    {
+      'name': 'Crocs Reviva Sandal',
+      'price': 'Rp. 499.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1603487742131-4160ec999306?w=400',
+      'rating': 4.5,
+      'reviews': 112,
+      'sku': 'reviva_sandal',
+      'isComingSoon': false,
+    },
+  ];
+
+  // New Arrivals: latest Crocs products
+  static const List<Map<String, dynamic>> _newArrivals = [
+    {
+      'name': 'Crocs Echo Clog',
+      'price': 'Rp. 899.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+      'rating': 4.8,
+      'reviews': 54,
+      'sku': 'echo_clog',
+      'isComingSoon': false,
+    },
+    {
+      'name': 'Crocs Neo Puff Clog',
+      'price': 'Rp. 1.299.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400',
+      'rating': 4.9,
+      'reviews': 28,
+      'sku': 'neo_puff_clog',
+      'isComingSoon': false,
+    },
+    {
+      'name': 'Crocs Getaway Flip',
+      'price': 'Rp. 449.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1523779105320-d1cd346ff52b?w=400',
+      'rating': 4.6,
+      'reviews': 73,
+      'sku': 'getaway_flip',
+      'isComingSoon': false,
+    },
+    {
+      'name': 'Crocs Blue Clogs',
+      'price': 'Rp. 649.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400',
+      'rating': 4.7,
+      'reviews': 0,
+      'sku': 'blue_clogs',
+      'isComingSoon': true,
+    },
+  ];
+
+  // Top Rated: highest rated Crocs products
+  static const List<Map<String, dynamic>> _topRated = [
+    {
+      'name': 'Crocs Literide 360',
+      'price': 'Rp. 999.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
+      'rating': 4.9,
+      'reviews': 501,
+      'sku': 'literide_360',
+      'isComingSoon': false,
+    },
+    {
+      'name': 'Crocs Classic Lined',
+      'price': 'Rp. 799.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400',
+      'rating': 4.8,
+      'reviews': 378,
+      'sku': 'classic_lined',
+      'isComingSoon': false,
+    },
+    {
+      'name': 'Crocs Crocband Clog',
+      'price': 'Rp. 549.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400',
+      'rating': 4.7,
+      'reviews': 422,
+      'sku': 'crocband_clog',
+      'isComingSoon': false,
+    },
+    {
+      'name': 'Crocs Classic Clog',
+      'price': 'Rp. 599.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+      'rating': 4.8,
+      'reviews': 312,
+      'sku': 'classic_clog',
+      'isComingSoon': false,
+    },
+  ];
+
+  // Special Offers: discounted Crocs products
+  static const List<Map<String, dynamic>> _specialOffers = [
+    {
+      'name': 'Crocs Classic Clog',
+      'price': 'Rp. 449.000',
+      'originalPrice': 'Rp. 599.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
+      'rating': 4.8,
+      'reviews': 312,
+      'sku': 'classic_clog_sale',
+      'isComingSoon': false,
+      'isSale': true,
+    },
+    {
+      'name': 'Crocs Baya Sandal',
+      'price': 'Rp. 299.000',
+      'originalPrice': 'Rp. 449.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=400',
+      'rating': 4.5,
+      'reviews': 167,
+      'sku': 'baya_sandal_sale',
+      'isComingSoon': false,
+      'isSale': true,
+    },
+    {
+      'name': 'Crocs Crocband Flip',
+      'price': 'Rp. 349.000',
+      'originalPrice': 'Rp. 499.000',
+      'imageUrl': 'https://images.unsplash.com/photo-1523779105320-d1cd346ff52b?w=400',
+      'rating': 4.6,
+      'reviews': 89,
+      'sku': 'crocband_flip_sale',
+      'isComingSoon': false,
+      'isSale': true,
+    },
   ];
 
   @override
@@ -144,6 +298,18 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                     _buildSectionWithSeeAll('Best Sellers'),
                     const SizedBox(height: 12),
                     _buildBestSellersList(),
+                    const SizedBox(height: 24),
+                    _buildSectionWithSeeAll('New Arrivals'),
+                    const SizedBox(height: 12),
+                    _buildProductSection(_newArrivals),
+                    const SizedBox(height: 24),
+                    _buildSectionWithSeeAll('Top Rated Product'),
+                    const SizedBox(height: 12),
+                    _buildProductSection(_topRated),
+                    const SizedBox(height: 24),
+                    _buildSectionWithSeeAll('Special Offers'),
+                    const SizedBox(height: 12),
+                    _buildSpecialOffersList(),
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -333,36 +499,46 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
         itemCount: _categories.length,
         itemBuilder: (context, index) {
           final cat = _categories[index];
-          return Container(
-            width: 72,
-            margin: EdgeInsets.only(right: index < _categories.length - 1 ? 14 : 0),
-            child: Column(
-              children: [
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: (cat['color'] as Color).withOpacity(0.15),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: (cat['color'] as Color).withOpacity(0.4)),
-                  ),
-                  child: Icon(
-                    cat['icon'] as IconData,
-                    color: cat['color'] as Color,
-                    size: 28,
-                  ),
+          return GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CategoryProductsPage(
+                  categoryName: cat['label'] as String,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  cat['label'] as String,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF333333),
+              ),
+            ),
+            child: Container(
+              width: 72,
+              margin: EdgeInsets.only(right: index < _categories.length - 1 ? 14 : 0),
+              child: Column(
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: (cat['color'] as Color).withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: (cat['color'] as Color).withValues(alpha: 0.4)),
+                    ),
+                    child: Icon(
+                      cat['icon'] as IconData,
+                      color: cat['color'] as Color,
+                      size: 28,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Text(
+                    cat['label'] as String,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF333333),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -452,6 +628,91 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     );
   }
 
+  Widget _buildProductSection(List<Map<String, dynamic>> products) {
+    return SizedBox(
+      height: 260,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          final p = products[index];
+          return GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProductDetailPage(
+                  name: p['name'] as String,
+                  price: p['price'] as String,
+                  imageUrl: p['imageUrl'] as String,
+                  rating: (p['rating'] as num).toDouble(),
+                  reviewCount: p['reviews'] as int,
+                  sku: p['sku'] as String? ?? '',
+                  isComingSoon: p['isComingSoon'] as bool? ?? false,
+                ),
+              ),
+            ),
+            child: Container(
+              width: 168,
+              margin: EdgeInsets.only(right: index < products.length - 1 ? 14 : 0),
+              child: _BestSellerCard(
+                name: p['name'] as String,
+                price: p['price'] as String,
+                imageUrl: p['imageUrl'] as String,
+                rating: (p['rating'] as num).toDouble(),
+                reviewCount: p['reviews'] as int,
+                isComingSoon: p['isComingSoon'] as bool? ?? false,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildSpecialOffersList() {
+    return SizedBox(
+      height: 280,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        itemCount: _specialOffers.length,
+        itemBuilder: (context, index) {
+          final p = _specialOffers[index];
+          return GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProductDetailPage(
+                  name: p['name'] as String,
+                  price: p['price'] as String,
+                  imageUrl: p['imageUrl'] as String,
+                  rating: (p['rating'] as num).toDouble(),
+                  reviewCount: p['reviews'] as int,
+                  sku: p['sku'] as String? ?? '',
+                  isComingSoon: false,
+                ),
+              ),
+            ),
+            child: Container(
+              width: 168,
+              margin: EdgeInsets.only(right: index < _specialOffers.length - 1 ? 14 : 0),
+              child: _BestSellerCard(
+                name: p['name'] as String,
+                price: p['price'] as String,
+                imageUrl: p['imageUrl'] as String,
+                rating: (p['rating'] as num).toDouble(),
+                reviewCount: p['reviews'] as int,
+                isSale: true,
+                originalPrice: p['originalPrice'] as String?,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Widget _buildBottomNav() {
     const items = [
       (icon: Icons.home_outlined, label: 'HOME'),
@@ -526,6 +787,8 @@ class _BestSellerCard extends StatelessWidget {
   final double rating;
   final int reviewCount;
   final bool isComingSoon;
+  final bool isSale;
+  final String? originalPrice;
 
   const _BestSellerCard({
     required this.name,
@@ -534,6 +797,8 @@ class _BestSellerCard extends StatelessWidget {
     required this.rating,
     required this.reviewCount,
     this.isComingSoon = false,
+    this.isSale = false,
+    this.originalPrice,
   });
 
   @override
@@ -598,6 +863,26 @@ class _BestSellerCard extends StatelessWidget {
                     ),
                   ),
                 ),
+              if (isSale)
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFE3A30),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      'SALE',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               Positioned(
                 bottom: 8,
                 right: 8,
@@ -633,9 +918,19 @@ class _BestSellerCard extends StatelessWidget {
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
-                    color: Color(0xFFE53935),
+                    color: Color(0xFFFE3A30),
                   ),
                 ),
+                if (isSale && originalPrice != null)
+                  Text(
+                    originalPrice!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 11,
+                      color: Color(0xFFC4C5C4),
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
                 const SizedBox(height: 6),
                 Row(
                   children: [
