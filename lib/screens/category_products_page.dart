@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/wishlist_provider.dart';
 import 'product_detail_page.dart';
 
 // Products mapped to each category
@@ -438,6 +440,11 @@ const Map<String, List<Map<String, dynamic>>> _categoryProducts = {
   ],
 };
 
+// Flat list of all products across every category — used by SearchPage
+final List<Map<String, dynamic>> allProducts = _categoryProducts.values
+    .expand((list) => list)
+    .toList();
+
 class CategoryProductsPage extends StatefulWidget {
   final String categoryName;
 
@@ -447,9 +454,72 @@ class CategoryProductsPage extends StatefulWidget {
   State<CategoryProductsPage> createState() => _CategoryProductsPageState();
 }
 
+enum _SortOption { none, nameAZ, nameZA, priceHigh, priceLow }
+
 class _CategoryProductsPageState extends State<CategoryProductsPage> {
-  List<Map<String, dynamic>> get _products =>
-      _categoryProducts[widget.categoryName] ?? [];
+  final _searchCtrl = TextEditingController();
+  String _query = '';
+  _SortOption _sort = _SortOption.none;
+  RangeValues _priceRange = const RangeValues(0, 400);
+  bool _hideComingSoon = false;
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  double _parsePrice(String price) {
+    final cleaned = price.replaceAll(RegExp(r'[^0-9.]'), '');
+    return double.tryParse(cleaned) ?? 0;
+  }
+
+  List<Map<String, dynamic>> get _filteredProducts {
+    final base = _categoryProducts[widget.categoryName] ?? [];
+    var list = base.where((p) {
+      final name = (p['name'] as String).toLowerCase();
+      final price = _parsePrice(p['price'] as String);
+      final comingSoon = p['isComingSoon'] as bool? ?? false;
+      if (_query.isNotEmpty && !name.contains(_query.toLowerCase())) return false;
+      if (price < _priceRange.start || price > _priceRange.end) return false;
+      if (_hideComingSoon && comingSoon) return false;
+      return true;
+    }).toList();
+
+    switch (_sort) {
+      case _SortOption.nameAZ:
+        list.sort((a, b) => (a['name'] as String).compareTo(b['name'] as String));
+      case _SortOption.nameZA:
+        list.sort((a, b) => (b['name'] as String).compareTo(a['name'] as String));
+      case _SortOption.priceLow:
+        list.sort((a, b) => _parsePrice(a['price']).compareTo(_parsePrice(b['price'])));
+      case _SortOption.priceHigh:
+        list.sort((a, b) => _parsePrice(b['price']).compareTo(_parsePrice(a['price'])));
+      case _SortOption.none:
+        break;
+    }
+    return list;
+  }
+
+  void _showFilterSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _FilterSheet(
+        currentSort: _sort,
+        currentPriceRange: _priceRange,
+        hideComingSoon: _hideComingSoon,
+        onApply: (sort, priceRange, hideComingSoon) {
+          setState(() {
+            _sort = sort;
+            _priceRange = priceRange;
+            _hideComingSoon = hideComingSoon;
+          });
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -482,35 +552,39 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
                     child: Container(
                       height: 50,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFAFAFA),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: const Color(0xFFE0E0E0)),
                       ),
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: Text(
-                              'Search Product Name',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade400,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.only(right: 16),
-                            child: Icon(Icons.search, color: Color(0xFF0C1A30), size: 20),
-                          ),
-                        ],
+                      child: TextField(
+                        controller: _searchCtrl,
+                        onChanged: (v) => setState(() => _query = v),
+                        style: const TextStyle(fontSize: 14, color: Color(0xFF0C1A30)),
+                        decoration: InputDecoration(
+                          hintText: 'Search in ${widget.categoryName}...',
+                          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          suffixIcon: _query.isNotEmpty
+                              ? IconButton(
+                                  icon: Icon(Icons.clear, size: 16, color: Colors.grey.shade400),
+                                  onPressed: () {
+                                    _searchCtrl.clear();
+                                    setState(() => _query = '');
+                                  },
+                                )
+                              : const Padding(
+                                  padding: EdgeInsets.only(right: 14),
+                                  child: Icon(Icons.search, color: Color(0xFF0C1A30), size: 20),
+                                ),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
                   // Product grid
                   Expanded(
-                    child: _products.isEmpty
+                    child: _filteredProducts.isEmpty
                         ? const Center(
                             child: Text(
                               'No products in this category yet.',
@@ -525,9 +599,9 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
                               mainAxisSpacing: 15,
                               childAspectRatio: 0.62,
                             ),
-                            itemCount: _products.length,
+                            itemCount: _filteredProducts.length,
                             itemBuilder: (context, index) {
-                              final p = _products[index];
+                              final p = _filteredProducts[index];
                               return GestureDetector(
                                 onTap: () => Navigator.push(
                                   context,
@@ -544,6 +618,7 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
                                   ),
                                 ),
                                 child: _CategoryProductCard(
+                                  sku: p['sku'] as String? ?? '',
                                   name: p['name'] as String,
                                   price: p['price'] as String,
                                   imageUrl: p['imageUrl'] as String,
@@ -565,20 +640,57 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
                 width: double.infinity,
                 height: 50,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: _showFilterSheet,
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Color(0xFF0C1A30)),
+                    side: BorderSide(
+                      color: (_sort != _SortOption.none || _priceRange != const RangeValues(0, 400) || _hideComingSoon)
+                          ? const Color(0xFF3669C9)
+                          : const Color(0xFF0C1A30),
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: const Text(
-                    'Filter & Sorting',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF0C1A30),
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.tune,
+                        size: 18,
+                        color: (_sort != _SortOption.none || _priceRange != const RangeValues(0, 400) || _hideComingSoon)
+                            ? const Color(0xFF3669C9)
+                            : const Color(0xFF0C1A30),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Filter & Sorting',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: (_sort != _SortOption.none || _priceRange != const RangeValues(0, 400) || _hideComingSoon)
+                              ? const Color(0xFF3669C9)
+                              : const Color(0xFF0C1A30),
+                        ),
+                      ),
+                      if (_sort != _SortOption.none || _priceRange != const RangeValues(0, 400) || _hideComingSoon) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF3669C9),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            '${[
+                              _sort != _SortOption.none,
+                              _priceRange != const RangeValues(0, 400),
+                              _hideComingSoon,
+                            ].where((v) => v).length}',
+                            style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),
@@ -629,6 +741,7 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
 }
 
 class _CategoryProductCard extends StatelessWidget {
+  final String sku;
   final String name;
   final String price;
   final String imageUrl;
@@ -637,6 +750,7 @@ class _CategoryProductCard extends StatelessWidget {
   final bool isComingSoon;
 
   const _CategoryProductCard({
+    required this.sku,
     required this.name,
     required this.price,
     required this.imageUrl,
@@ -703,6 +817,38 @@ class _CategoryProductCard extends StatelessWidget {
                     ),
                   ),
                 ),
+              Positioned(
+                top: 6,
+                right: 6,
+                child: Consumer<WishlistProvider>(
+                  builder: (context, wishlist, _) {
+                    final isWishlisted = wishlist.contains(sku);
+                    return GestureDetector(
+                      onTap: () => wishlist.toggle(
+                        sku: sku,
+                        name: name,
+                        price: price,
+                        imageUrl: imageUrl,
+                        rating: rating,
+                        reviewCount: reviewCount,
+                        isComingSoon: isComingSoon,
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          isWishlisted ? Icons.favorite : Icons.favorite_border,
+                          size: 16,
+                          color: isWishlisted ? const Color(0xFFFE3A30) : Colors.grey,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ],
           ),
           // Info
@@ -760,3 +906,263 @@ class _CategoryProductCard extends StatelessWidget {
     );
   }
 }
+
+// ── Filter & Sorting bottom sheet ────────────────────────────────────────────
+
+class _FilterSheet extends StatefulWidget {
+  final _SortOption currentSort;
+  final RangeValues currentPriceRange;
+  final bool hideComingSoon;
+  final void Function(_SortOption sort, RangeValues priceRange, bool hideComingSoon) onApply;
+
+  const _FilterSheet({
+    required this.currentSort,
+    required this.currentPriceRange,
+    required this.hideComingSoon,
+    required this.onApply,
+  });
+
+  @override
+  State<_FilterSheet> createState() => _FilterSheetState();
+}
+
+class _FilterSheetState extends State<_FilterSheet>
+    with SingleTickerProviderStateMixin {
+  static const _navy = Color(0xFF0C1A30);
+  static const _blue = Color(0xFF3669C9);
+  static const _green = Color(0xFF3A9B7A);
+
+  late TabController _tabController;
+  late _SortOption _sort;
+  late RangeValues _priceRange;
+  late bool _hideComingSoon;
+
+  static const double _priceMin = 0;
+  static const double _priceMax = 400;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _sort = widget.currentSort;
+    _priceRange = widget.currentPriceRange;
+    _hideComingSoon = widget.hideComingSoon;
+    // Open on Sorting tab if a sort is active
+    if (_sort != _SortOption.none) _tabController.index = 1;
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  void _reset() {
+    setState(() {
+      _sort = _SortOption.none;
+      _priceRange = const RangeValues(_priceMin, _priceMax);
+      _hideComingSoon = false;
+    });
+  }
+
+  void _apply() {
+    widget.onApply(_sort, _priceRange, _hideComingSoon);
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 25),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(25, 20, 25, 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Filter & Sorting',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _navy, letterSpacing: 0.2),
+                ),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: const Icon(Icons.close, size: 22, color: _navy),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Tab bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
+            child: TabBar(
+              controller: _tabController,
+              labelColor: _navy,
+              unselectedLabelColor: _navy,
+              labelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              unselectedLabelStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+              indicatorColor: _navy,
+              indicatorSize: TabBarIndicatorSize.label,
+              indicatorWeight: 2,
+              dividerColor: Colors.transparent,
+              tabs: const [Tab(text: 'Filter'), Tab(text: 'Sorting')],
+            ),
+          ),
+          const Divider(height: 1),
+          // Tab content
+          SizedBox(
+            height: 300,
+            child: TabBarView(
+              controller: _tabController,
+              children: [_buildFilterTab(), _buildSortingTab()],
+            ),
+          ),
+          // Reset + Apply buttons
+          Padding(
+            padding: const EdgeInsets.fromLTRB(25, 8, 25, 28),
+            child: Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 50,
+                    child: OutlinedButton(
+                      onPressed: _reset,
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: _navy),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: const Text('Reset',
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: _navy)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _apply,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _blue,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: const Text('Apply',
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(25, 20, 25, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Price Range',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: _navy)),
+          const SizedBox(height: 16),
+          RangeSlider(
+            values: _priceRange,
+            min: _priceMin,
+            max: _priceMax,
+            activeColor: _blue,
+            inactiveColor: const Color(0xFFEDEDED),
+            onChanged: (v) => setState(() => _priceRange = v),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('\$${_priceRange.start.toStringAsFixed(0)}',
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _navy)),
+                Text('\$${_priceRange.end.toStringAsFixed(0)}',
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _navy)),
+              ],
+            ),
+          ),
+          const Divider(height: 32),
+          _buildCheckRow(
+            label: 'In Stock Only',
+            checked: _hideComingSoon,
+            onTap: () => setState(() => _hideComingSoon = !_hideComingSoon),
+            isGreen: _hideComingSoon,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSortingTab() {
+    final options = [
+      (_SortOption.none, 'Default'),
+      (_SortOption.nameAZ, 'Name (A-Z)'),
+      (_SortOption.nameZA, 'Name (Z-A)'),
+      (_SortOption.priceHigh, 'Price (High-Low)'),
+      (_SortOption.priceLow, 'Price (Low-High)'),
+    ];
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: options.length,
+      separatorBuilder: (_, __) => const Divider(height: 1, indent: 25, endIndent: 25),
+      itemBuilder: (context, i) {
+        final (opt, label) = options[i];
+        return _buildCheckRow(
+          label: label,
+          checked: _sort == opt,
+          onTap: () => setState(() => _sort = opt),
+          isGreen: _sort == opt,
+        );
+      },
+    );
+  }
+
+  Widget _buildCheckRow({
+    required String label,
+    required bool checked,
+    required VoidCallback onTap,
+    bool isGreen = false,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label,
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: _navy)),
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: checked ? _green : Colors.transparent,
+                borderRadius: BorderRadius.circular(6),
+                border: checked ? null : Border.all(color: Colors.grey.shade400),
+              ),
+              child: checked
+                  ? const Icon(Icons.check, size: 16, color: Colors.white)
+                  : null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

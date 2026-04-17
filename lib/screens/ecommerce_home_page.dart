@@ -4,6 +4,8 @@ import '../providers/cart_provider.dart';
 import 'cart_page.dart';
 import 'product_detail_page.dart';
 import 'category_products_page.dart';
+import 'search_page.dart';
+import 'wishlist_page.dart';
 
 /// E-Commerce Home (unlogged) – replica of Figma design from screenshot.
 /// Header (Mega Mall blue), search ("Search Product Name"), promo banner (Gatis Ongkir),
@@ -399,7 +401,10 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
         ),
         child: TextField(
           readOnly: true,
-          onTap: () {},
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const SearchPage()),
+          ),
           decoration: InputDecoration(
             hintText: 'Search Product Name',
             hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
@@ -649,6 +654,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
               width: 168,
               margin: EdgeInsets.only(right: index < _bestSellers.length - 1 ? 14 : 0),
               child: _BestSellerCard(
+                sku: p['sku'] as String? ?? '',
                 name: p['name'] as String,
                 price: p['price'] as String,
                 imageUrl: p['imageUrl'] as String,
@@ -691,6 +697,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
               width: 168,
               margin: EdgeInsets.only(right: index < products.length - 1 ? 14 : 0),
               child: _BestSellerCard(
+                sku: p['sku'] as String? ?? '',
                 name: p['name'] as String,
                 price: p['price'] as String,
                 imageUrl: p['imageUrl'] as String,
@@ -733,6 +740,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
               width: 168,
               margin: EdgeInsets.only(right: index < _specialOffers.length - 1 ? 14 : 0),
               child: _BestSellerCard(
+                sku: p['sku'] as String? ?? '',
                 name: p['name'] as String,
                 price: p['price'] as String,
                 imageUrl: p['imageUrl'] as String,
@@ -770,6 +778,13 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
               final selected = _selectedNavIndex == index;
               return InkWell(
                 onTap: () {
+                  if (index == 1) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const WishlistPage()),
+                    );
+                    return;
+                  }
                   if (index == 2) {
                     Navigator.push(
                       context,
@@ -825,6 +840,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
 }
 
 class _BestSellerCard extends StatelessWidget {
+  final String sku;
   final String name;
   final String price;
   final String imageUrl;
@@ -835,6 +851,7 @@ class _BestSellerCard extends StatelessWidget {
   final String? originalPrice;
 
   const _BestSellerCard({
+    required this.sku,
     required this.name,
     required this.price,
     required this.imageUrl,

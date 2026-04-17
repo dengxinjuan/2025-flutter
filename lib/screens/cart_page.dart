@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
+import 'checkout_shipping_page.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
@@ -148,12 +149,9 @@ class CartPage extends StatelessWidget {
             height: 50,
             child: ElevatedButton(
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Checkout coming soon!'),
-                    backgroundColor: _blue,
-                    behavior: SnackBarBehavior.floating,
-                  ),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const CheckoutShippingPage()),
                 );
               },
               style: ElevatedButton.styleFrom(

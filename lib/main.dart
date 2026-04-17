@@ -4,6 +4,8 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'config.dart';
 import 'providers/cart_provider.dart';
+import 'providers/order_provider.dart';
+import 'providers/wishlist_provider.dart';
 import 'screens/ecommerce_home_page.dart';
 import 'screens/login_screen.dart';
 
@@ -42,8 +44,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => CartProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_) {
+          final w = WishlistProvider();
+          w.load();
+          return w;
+        }),
+      ],
       child: MaterialApp(
         title: 'Mega Mall',
         theme: ThemeData(

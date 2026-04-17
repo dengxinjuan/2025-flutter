@@ -3,6 +3,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/cart_provider.dart';
+import '../providers/wishlist_provider.dart';
 import 'cart_page.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -30,7 +31,6 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
-  bool _isWishlisted = false;
   bool _notifyRequested = false;
   bool _notifyLoading = false;
 
@@ -705,35 +705,48 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         child: Row(
           children: [
             Expanded(
-              child: GestureDetector(
-                onTap: () => setState(() => _isWishlisted = !_isWishlisted),
-                child: Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: _isWishlisted ? _redVelvet : Colors.white,
-                    border: Border.all(color: _isWishlisted ? _redVelvet : _navyBlack),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        _isWishlisted ? Icons.favorite : Icons.favorite_border,
-                        size: 18,
-                        color: _isWishlisted ? Colors.white : _navyBlack,
+              child: Consumer<WishlistProvider>(
+                builder: (context, wishlist, _) {
+                  final effectiveSku = widget.sku.isNotEmpty ? widget.sku : widget.name;
+                  final isWishlisted = wishlist.contains(effectiveSku);
+                  return GestureDetector(
+                    onTap: () => wishlist.toggle(
+                      sku: effectiveSku,
+                      name: widget.name,
+                      price: widget.price,
+                      imageUrl: widget.imageUrl,
+                      rating: widget.rating,
+                      reviewCount: widget.reviewCount,
+                    ),
+                    child: Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: isWishlisted ? _redVelvet : Colors.white,
+                        border: Border.all(color: isWishlisted ? _redVelvet : _navyBlack),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _isWishlisted ? 'Wishlisted' : 'Wishlist',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: _isWishlisted ? Colors.white : _navyBlack,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            isWishlisted ? Icons.favorite : Icons.favorite_border,
+                            size: 18,
+                            color: isWishlisted ? Colors.white : _navyBlack,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            isWishlisted ? 'Wishlisted' : 'Wishlist',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: isWishlisted ? Colors.white : _navyBlack,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(width: 15),
