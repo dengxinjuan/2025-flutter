@@ -1,5 +1,5 @@
 # Full App Implementation Plan
-_Last updated: 2026-04-16_
+_Last updated: 2026-04-17_
 
 ## Current State
 | What exists | Status |
@@ -13,7 +13,11 @@ _Last updated: 2026-04-16_
 | Cart (CartProvider + CartPage + Add to Cart wired) | ✅ Done |
 | Cart badge on header + ORDER tab navigation | ✅ Done |
 | All prices in USD, all UI text in English | ✅ Done |
-| Wishlist, Orders, Search, Checkout, Payment | ❌ Missing |
+| Checkout flow (shipping → payment → review → confirmation) | ✅ Done |
+| Global search + category search | ✅ Done |
+| Filter & Sorting sheet (price range, in-stock, sort) | ✅ Done |
+| Wishlist (WishlistProvider + WishlistPage + heart icons) | ✅ Done |
+| Orders page, Real backend, Payment integration | ❌ Missing |
 
 ---
 
@@ -62,38 +66,45 @@ Everything else depends on this being in place first.
 
 ---
 
-## Phase 4 — Wishlist
-### 4.1 Favorite toggle
-- Heart icon on every product card (home + category pages)
+## Phase 4 — Wishlist ✅ COMPLETE
+### 4.1 Favorite toggle ✅
+- Heart icon on category product cards (top-right overlay)
 - Tapping toggles the item in `WishlistProvider`
 - Persisted to `SharedPreferences` so it survives app restart
+- Product detail page Wishlist button synced to global provider state
+- Note: heart icons intentionally removed from home page cards (user preference)
 
-### 4.2 Wishlist page
-- Grid of favorited products
-- Tap to go to product detail
+### 4.2 Wishlist page ✅ (lib/screens/wishlist_page.dart)
+- 2-column grid of favorited products
+- Tap heart to remove; tap card to go to product detail
 - "Add All to Cart" button
+- Clear all with confirm dialog; empty state illustration
+- WISHLIST bottom nav tab navigates here
 
 ---
 
-## Phase 5 — Search & Filter
-### 5.1 Working search
-- Search bar on home page and category page becomes functional
-- Searches across all products by name
-- Shows results in real-time as user types
+## Phase 5 — Search & Filter ✅ COMPLETE
+### 5.1 Working search ✅
+- Home search bar taps through to `SearchPage` (lib/screens/search_page.dart)
+- Searches across all products globally by name in real-time
+- Category page has its own inline search bar
 
-### 5.2 Filter & Sorting (category page)
-- "Filter & Sorting" bottom sheet with:
-  - Sort by: Price (low→high, high→low), Rating, Newest
-  - Filter by: Price range slider, Rating (4★+, 3★+), Coming Soon toggle
+### 5.2 Filter & Sorting (category page) ✅
+- "Filter & Sorting" bottom sheet matching Figma design:
+  - **Filter tab:** Price range slider ($0–$400), "In Stock Only" checkbox
+  - **Sorting tab:** Default, Name A–Z, Name Z–A, Price High–Low, Price Low–High
+- Active filter badge on button when filters are applied
 - Apply/Reset buttons
 
 ---
 
 ## Phase 6 — Checkout & Orders
-### 6.1 Checkout flow (3 screens)
-1. **Shipping** — name, address, city, postal code
-2. **Payment** — choose method (bank transfer, credit card, e-wallet)
-3. **Review** — order summary, place order button
+### 6.1 Checkout flow ✅ COMPLETE (no real backend)
+1. **Shipping** — name, phone, address, city, zip (validated form)
+2. **Payment** — choose method (credit card, bank transfer, e-wallet)
+3. **Review** — order summary with items, shipping address, payment, USD total
+4. **Confirmation** — success screen with order ID, "Continue Shopping"
+- `OrderProvider` stores placed orders in memory
 
 ### 6.2 Payment integration
 - Integrate **Midtrans** (standard for Indonesian apps)
