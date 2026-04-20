@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../providers/cart_provider.dart';
 import '../providers/order_provider.dart';
 import 'checkout_confirmation_page.dart';
 import 'checkout_widgets.dart';
 
-class CheckoutReviewPage extends StatelessWidget {
+class CheckoutReviewPage extends StatefulWidget {
   final ShippingInfo shippingInfo;
   final PaymentMethod paymentMethod;
 
@@ -15,26 +16,45 @@ class CheckoutReviewPage extends StatelessWidget {
     required this.paymentMethod,
   });
 
+  @override
+  State<CheckoutReviewPage> createState() => _CheckoutReviewPageState();
+}
+
+class _CheckoutReviewPageState extends State<CheckoutReviewPage> {
   static const _navy = Color(0xFF0C1A30);
-  static const _blue = Color(0xFF3669C9);
   static const _bg = Color(0xFFFAFAFA);
   static const _red = Color(0xFFFE3A30);
 
-  void _placeOrder(BuildContext context) {
-    final cart = context.read<CartProvider>();
-    final orders = context.read<OrderProvider>();
-    final order = orders.placeOrder(
-      items: cart.items.values.toList(),
-      shippingInfo: shippingInfo,
-      paymentMethod: paymentMethod,
-      total: cart.totalPrice,
-    );
-    cart.clear();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (_) => CheckoutConfirmationPage(order: order)),
-      (route) => route.isFirst,
-    );
+  bool _loading = false;
+
+  Future<void> _placeOrder() async {
+    setState(() => _loading = true);
+    try {
+      final cart = context.read<CartProvider>();
+      final orders = context.read<OrderProvider>();
+      final userId = context.read<AuthProvider>().userId;
+      final order = await orders.placeOrder(
+        items: cart.items.values.toList(),
+        shippingInfo: widget.shippingInfo,
+        paymentMethod: widget.paymentMethod,
+        total: cart.totalPrice,
+        userId: userId,
+      );
+      cart.clear();
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (_) => CheckoutConfirmationPage(order: order)),
+        (route) => route.isFirst,
+      );
+    } catch (e) {
+      setState(() => _loading = false);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to place order: $e')),
+      );
+    }
   }
 
   @override
@@ -52,7 +72,8 @@ class CheckoutReviewPage extends StatelessWidget {
         ),
         title: const Text(
           'Review Order',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: _navy),
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w600, color: _navy),
         ),
         centerTitle: true,
       ),
@@ -79,16 +100,21 @@ class CheckoutReviewPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(shippingInfo.fullName,
+                        Text(widget.shippingInfo.fullName,
                             style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.w600, color: _navy)),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: _navy)),
                         const SizedBox(height: 4),
-                        Text(shippingInfo.phone,
-                            style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                        Text(widget.shippingInfo.phone,
+                            style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade600)),
                         const SizedBox(height: 4),
                         Text(
-                          '${shippingInfo.address}, ${shippingInfo.city} ${shippingInfo.zipCode}',
-                          style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                          '${widget.shippingInfo.address}, ${widget.shippingInfo.city} ${widget.shippingInfo.zipCode}',
+                          style: TextStyle(
+                              fontSize: 13, color: Colors.grey.shade600),
                         ),
                       ],
                     ),
@@ -98,12 +124,15 @@ class CheckoutReviewPage extends StatelessWidget {
                     title: 'Payment Method',
                     child: Row(
                       children: [
-                        Text(paymentMethod.icon, style: const TextStyle(fontSize: 22)),
+                        Text(widget.paymentMethod.icon,
+                            style: const TextStyle(fontSize: 22)),
                         const SizedBox(width: 10),
                         Text(
-                          paymentMethod.label,
+                          widget.paymentMethod.label,
                           style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w500, color: _navy),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: _navy),
                         ),
                       ],
                     ),
@@ -135,8 +164,8 @@ class CheckoutReviewPage extends StatelessWidget {
             ),
           ),
           buildBottomButton(
-            label: 'Place Order',
-            onTap: () => _placeOrder(context),
+            label: _loading ? 'Placing Order...' : 'Place Order',
+            onTap: _loading ? null : _placeOrder,
           ),
         ],
       ),
@@ -189,7 +218,8 @@ class CheckoutReviewPage extends StatelessWidget {
                 width: 48,
                 height: 48,
                 color: Colors.grey.shade100,
-                child: const Icon(Icons.image_not_supported_outlined, size: 20, color: Colors.grey),
+                child: const Icon(Icons.image_not_supported_outlined,
+                    size: 20, color: Colors.grey),
               ),
             ),
           ),
@@ -200,11 +230,14 @@ class CheckoutReviewPage extends StatelessWidget {
               children: [
                 Text(item.name,
                     style: const TextStyle(
-                        fontSize: 13, fontWeight: FontWeight.w500, color: _navy),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: _navy),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis),
                 Text('Qty: ${item.quantity}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                    style: TextStyle(
+                        fontSize: 12, color: Colors.grey.shade500)),
               ],
             ),
           ),

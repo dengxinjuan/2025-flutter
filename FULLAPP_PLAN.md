@@ -1,5 +1,5 @@
 # Full App Implementation Plan
-_Last updated: 2026-04-17_
+_Last updated: 2026-04-20_
 
 ## Current State
 | What exists | Status |
@@ -8,8 +8,11 @@ _Last updated: 2026-04-17_
 | Category pages with 2-column grid | ✅ Done |
 | Product detail page | ✅ Done |
 | "Notify Me" / Coming Soon flow (OneSignal) | ✅ Done |
-| Login screen (UI only) | ⚠️ UI only |
+| Login screen (Supabase email/password auth) | ✅ Done |
 | Node.js backend (JWT + notify-me + simulate-restock) | ✅ Done |
+| Supabase project + all tables (products, profiles, orders, order_items, reviews, wishlists) | ✅ Done |
+| Supabase Auth wired (sign in, sign up, sign out, session restore) | ✅ Done |
+| Orders persisted to Supabase for logged-in users (guest = in-memory) | ✅ Done |
 | Cart (CartProvider + CartPage + Add to Cart wired) | ✅ Done |
 | Cart badge on header + ORDER tab navigation | ✅ Done |
 | All prices in USD, all UI text in English | ✅ Done |
@@ -36,13 +39,15 @@ Everything else depends on this being in place first.
 
 ---
 
-## Phase 2 — Authentication
-### 2.1 Real login / register
-- Add email + password fields to `LoginScreen`
-- Connect to backend (`POST /login`, `POST /register`)
-- Store JWT token in `SharedPreferences`
-- Auto-login on app start if token exists
-- Logout clears token and resets OneSignal external ID
+## Phase 2 — Authentication ✅ COMPLETE (via Supabase)
+### 2.1 Real login / register ✅
+- Email + password fields on `LoginScreen`
+- Supabase Auth: `signIn`, `signUp`, `signOut`
+- Session auto-restored on app start via `Supabase.initialize`
+- `AuthProvider` (`lib/providers/auth_provider.dart`) — listens to auth state stream, exposes `isAuthenticated`, `userId`, `email`
+- `SupabaseService` singleton (`lib/services/supabase_service.dart`) — wraps Supabase client
+- LOGIN tab in bottom nav now navigates to `LoginScreen`
+- App fully works without login (guest mode preserved)
 
 ### 2.2 Profile page
 - Show user name, email, avatar
@@ -99,12 +104,14 @@ Everything else depends on this being in place first.
 ---
 
 ## Phase 6 — Checkout & Orders
-### 6.1 Checkout flow ✅ COMPLETE (no real backend)
+### 6.1 Checkout flow ✅ COMPLETE (Supabase-backed)
 1. **Shipping** — name, phone, address, city, zip (validated form)
 2. **Payment** — choose method (credit card, bank transfer, e-wallet)
 3. **Review** — order summary with items, shipping address, payment, USD total
 4. **Confirmation** — success screen with order ID, "Continue Shopping"
-- `OrderProvider` stores placed orders in memory
+- Logged-in users: order + items written to Supabase `orders` / `order_items` tables; loaded back on next login
+- Guest users: in-memory only (lost on restart)
+- `CheckoutReviewPage` shows loading spinner during Supabase write
 
 ### 6.2 Payment integration
 - Integrate **Midtrans** (standard for Indonesian apps)
@@ -118,28 +125,30 @@ Everything else depends on this being in place first.
 
 ---
 
-## Phase 7 — Real Backend & Database
-Currently all product data is hardcoded in Dart. This needs to move to a database.
+## Phase 7 — Real Backend & Database (Supabase)
+### 7.1 Supabase setup ✅ COMPLETE
+- Supabase project created, connected via MCP
+- All tables created with RLS policies and indexes:
+  `products`, `profiles`, `orders`, `order_items`, `reviews`, `wishlists`
+- `supabase_flutter 2.12.4` added to `pubspec.yaml`
+- `Supabase.initialize()` called in `main()` before `runApp`
+- Orders + auth fully wired (see Phase 2 + Phase 6.1)
 
-### 7.1 Database
-- Add **Supabase** or extend existing Node.js backend with **SQLite/PostgreSQL**
-- Tables: `users`, `products`, `categories`, `orders`, `order_items`, `reviews`
+### 7.2 Reviews migration ❌ (Supabase Phase 2)
+- `ReviewProvider.addReview()` → insert into `public.reviews`
+- `ReviewProvider.loadReviews(sku)` → query Supabase lazily per SKU
+- Remove `SharedPreferences` dependency from `ReviewProvider`
 
-### 7.2 API endpoints needed
-| Method | Endpoint | Purpose |
-|---|---|---|
-| GET | `/products` | All products (with filters) |
-| GET | `/products/:sku` | Single product detail |
-| GET | `/categories` | Category list |
-| POST | `/cart` | Add to cart (server-side cart) |
-| POST | `/orders` | Place order |
-| GET | `/orders/:userId` | User order history |
-| POST | `/reviews` | Submit review |
-
-### 7.3 App changes
-- Replace hardcoded `_featuredProducts`, `_bestSellers` etc. with API calls
+### 7.3 Products from Supabase ❌ (Supabase Phase 3)
+- Seed product data into `public.products` table
+- Create `lib/models/product.dart` + `lib/services/product_service.dart`
+- Replace hardcoded `_featuredProducts`, `_bestSellers` etc. with Supabase queries
 - Add loading skeletons while data fetches
-- Handle errors / empty states
+
+### 7.4 Wishlist sync ❌ (Supabase Phase 4)
+- `WishlistProvider` split: `loadFromSupabase(userId)` vs `loadGuest()`
+- On login: merge guest wishlist into Supabase via upsert
+- `toggle()` / `remove()` write to Supabase for auth users, SharedPreferences for guests
 
 ---
 
@@ -201,5 +210,5 @@ Phase 9 (Notifications)  →  Phase 10 (Polish)
 | `flutter_slidable` | Swipe-to-delete in cart |
 | `shimmer` | Loading skeleton placeholders |
 | `midtrans_sdk` | Payment |
-| `supabase_flutter` | Database (if using Supabase) |
+| `supabase_flutter` | Auth + Database (Supabase) | ✅ Added (v2.12.4) |
 | `flutter_svg` | SVG icons |

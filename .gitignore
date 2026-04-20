@@ -52,3 +52,4 @@ backend/onesignal-prime256v1-private-key.pem
 
 # App config with secrets
 lib/config.dart
+.mcp.json

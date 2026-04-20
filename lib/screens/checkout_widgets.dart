@@ -60,7 +60,7 @@ Widget buildStepIndicator({required int step}) {
   );
 }
 
-Widget buildBottomButton({required String label, required VoidCallback onTap}) {
+Widget buildBottomButton({required String label, required VoidCallback? onTap}) {
   return Container(
     color: Colors.white,
     padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),

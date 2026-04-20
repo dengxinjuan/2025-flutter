@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config.dart';
+import 'providers/auth_provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/order_provider.dart';
+import 'providers/review_provider.dart';
 import 'providers/wishlist_provider.dart';
 import 'screens/ecommerce_home_page.dart';
 import 'screens/login_screen.dart';
 
 const platform = MethodChannel('com.yourapp/notification');
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   platform.setMethodCallHandler((call) async {
@@ -19,6 +22,8 @@ void main() {
       print("🌙 Dart received silent push: ${call.arguments}");
     }
   });
+
+  await Supabase.initialize(url: kSupabaseUrl, anonKey: kSupabaseAnonKey);
 
   runApp(const MyApp());
 
@@ -46,12 +51,28 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
-        ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProxyProvider<AuthProvider, OrderProvider>(
+          create: (_) => OrderProvider(),
+          update: (_, auth, orders) {
+            if (auth.isAuthenticated) {
+              orders?.loadOrders(auth.userId!);
+            } else {
+              orders?.clearForSignOut();
+            }
+            return orders ?? OrderProvider();
+          },
+        ),
         ChangeNotifierProvider(create: (_) {
           final w = WishlistProvider();
           w.load();
           return w;
+        }),
+        ChangeNotifierProvider(create: (_) {
+          final r = ReviewProvider();
+          r.load();
+          return r;
         }),
       ],
       child: MaterialApp(

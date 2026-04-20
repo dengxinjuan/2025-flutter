@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import '../services/onesignal_auth_service.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../providers/auth_provider.dart';
+import '../services/supabase_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,35 +12,60 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _authService = OneSignalAuthService.instance;
-  final _userIdController = TextEditingController(text: 'user-123');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _loading = false;
   String? _statusMessage;
   bool _isError = false;
 
   @override
   void dispose() {
-    _userIdController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
   Future<void> _login() async {
-    final userId = _userIdController.text.trim();
-    if (userId.isEmpty) {
-      _setStatus('Please enter a user ID', isError: true);
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    if (email.isEmpty || password.isEmpty) {
+      _setStatus('Please enter your email and password', isError: true);
       return;
     }
-
     setState(() {
       _loading = true;
       _statusMessage = null;
     });
-
     try {
-      await _authService.login(userId);
-      _setStatus('Logged in as: ${_authService.externalId}');
+      await SupabaseService.instance.signIn(email, password);
+      _setStatus('Logged in successfully');
+    } on AuthException catch (e) {
+      _setStatus(e.message, isError: true);
     } catch (e) {
       _setStatus('Login failed: $e', isError: true);
+    } finally {
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _signUp() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    if (email.isEmpty || password.isEmpty) {
+      _setStatus('Please enter your email and password', isError: true);
+      return;
+    }
+    setState(() {
+      _loading = true;
+      _statusMessage = null;
+    });
+    try {
+      await SupabaseService.instance.signUp(email, password);
+      _setStatus('Account created! Check your email to confirm.');
+    } on AuthException catch (e) {
+      _setStatus(e.message, isError: true);
+    } catch (e) {
+      _setStatus('Sign up failed: $e', isError: true);
     } finally {
       setState(() => _loading = false);
     }
@@ -46,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _logout() async {
     setState(() => _loading = true);
     try {
-      await _authService.logout();
+      await SupabaseService.instance.signOut();
       _setStatus('Logged out successfully');
     } catch (e) {
       _setStatus('Logout failed: $e', isError: true);
@@ -64,11 +92,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoggedIn = _authService.isLoggedIn;
+    final auth = context.watch<AuthProvider>();
+    final isLoggedIn = auth.isAuthenticated;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('OneSignal Login'),
+        title: const Text('Login'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Padding(
@@ -95,11 +124,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   Expanded(
                     child: Text(
                       isLoggedIn
-                          ? 'Logged in as:\n${_authService.externalId}'
+                          ? 'Logged in as:\n${auth.email}'
                           : 'Not logged in',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: isLoggedIn ? Colors.green.shade700 : Colors.grey.shade600,
+                        color: isLoggedIn
+                            ? Colors.green.shade700
+                            : Colors.grey.shade600,
                       ),
                     ),
                   ),
@@ -110,26 +141,41 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 32),
 
             TextField(
-              controller: _userIdController,
+              controller: _emailController,
               enabled: !isLoggedIn && !_loading,
+              keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
-                labelText: 'User ID',
-                hintText: 'e.g. user-123 or john@example.com',
-                prefixIcon: Icon(Icons.person),
+                labelText: 'Email',
+                hintText: 'you@example.com',
+                prefixIcon: Icon(Icons.email_outlined),
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            TextField(
+              controller: _passwordController,
+              enabled: !isLoggedIn && !_loading,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Password',
+                prefixIcon: Icon(Icons.lock_outline),
                 border: OutlineInputBorder(),
               ),
             ),
 
             const SizedBox(height: 16),
 
-            if (!isLoggedIn)
+            if (!isLoggedIn) ...[
               FilledButton.icon(
                 onPressed: _loading ? null : _login,
                 icon: _loading
                     ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.login),
                 label: Text(_loading ? 'Logging in...' : 'Login'),
@@ -137,6 +183,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
               ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: _loading ? null : _signUp,
+                icon: const Icon(Icons.person_add_outlined),
+                label: const Text('Create Account'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ],
 
             if (isLoggedIn)
               OutlinedButton.icon(
@@ -163,31 +219,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: _isError ? Colors.red.shade50 : Colors.blue.shade50,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: _isError ? Colors.red.shade200 : Colors.blue.shade200,
+                    color:
+                        _isError ? Colors.red.shade200 : Colors.blue.shade200,
                   ),
                 ),
                 child: Text(
                   _statusMessage!,
                   style: TextStyle(
-                    color: _isError ? Colors.red.shade700 : Colors.blue.shade700,
+                    color:
+                        _isError ? Colors.red.shade700 : Colors.blue.shade700,
                   ),
                 ),
               ),
-
-            const Spacer(),
-
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.amber.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.amber.shade200),
-              ),
-              child: const Text(
-                '📡 Make sure the backend is running:\ncd backend && npm start',
-                style: TextStyle(fontSize: 12, color: Colors.black87),
-              ),
-            ),
           ],
         ),
       ),

@@ -6,6 +6,7 @@ import 'product_detail_page.dart';
 import 'category_products_page.dart';
 import 'search_page.dart';
 import 'wishlist_page.dart';
+import 'login_screen.dart';
 
 /// E-Commerce Home (unlogged) – replica of Figma design from screenshot.
 /// Header (Mega Mall blue), search ("Search Product Name"), promo banner (Gatis Ongkir),
@@ -789,6 +790,13 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const CartPage()),
+                    );
+                    return;
+                  }
+                  if (index == 3) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
                     );
                     return;
                   }
