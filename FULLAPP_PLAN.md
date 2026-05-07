@@ -49,10 +49,10 @@ Everything else depends on this being in place first.
 - LOGIN tab in bottom nav now navigates to `LoginScreen`
 - App fully works without login (guest mode preserved)
 
-### 2.2 Profile page
-- Show user name, email, avatar
-- Edit profile info
+### 2.2 Profile page ❌ TODO (high priority for demo)
+- Show user email from Supabase Auth
 - Logout button
+- Link to Orders page
 
 ---
 
@@ -113,15 +113,16 @@ Everything else depends on this being in place first.
 - Guest users: in-memory only (lost on restart)
 - `CheckoutReviewPage` shows loading spinner during Supabase write
 
-### 6.2 Payment integration
-- Integrate **Midtrans** (standard for Indonesian apps)
-  - Backend: create Midtrans transaction token
-  - App: open Midtrans payment page via WebView
-  - Handle success/failure callbacks
+### 6.2 Payment integration ⏭️ SKIPPED (portfolio decision)
+- Real payment (Stripe/Midtrans) skipped — requires hosted backend + business account
+- Current fake payment selection screen is sufficient for demo purposes
+- Stripe test mode is an option in the future if a real backend is hosted
+- **Future:** Stripe with test cards (4242 4242 4242 4242) if needed
 
-### 6.3 Orders page
-- List of past orders with status (Processing, Shipped, Delivered)
-- Tap order → order detail with items + tracking info
+### 6.3 Orders page ❌ TODO (high priority for demo)
+- List of past orders pulled from Supabase (logged-in users)
+- Show order ID, date, total, payment method
+- Tap order → order detail with items + shipping info
 
 ---
 

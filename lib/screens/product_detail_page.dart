@@ -3,6 +3,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/cart_provider.dart';
+import '../providers/review_provider.dart';
 import '../providers/wishlist_provider.dart';
 import 'cart_page.dart';
 
@@ -66,29 +67,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     },
   ];
 
-  static const _reviews = [
-    {
-      'name': 'Sarah Johnson',
-      'date': '2 weeks ago',
-      'rating': 5,
-      'avatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100',
-      'comment': 'Absolutely love these Crocs! Super comfortable for all-day wear. The material is lightweight and my feet never hurt.',
-    },
-    {
-      'name': 'Michael Chen',
-      'date': '1 month ago',
-      'rating': 4,
-      'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100',
-      'comment': 'Great quality and very comfortable. Runs true to size. Would definitely recommend to anyone looking for casual everyday footwear.',
-    },
-    {
-      'name': 'Emma Davis',
-      'date': '2 months ago',
-      'rating': 5,
-      'avatar': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100',
-      'comment': 'Best purchase this year! The ventilation holes keep my feet cool and the classic design goes with everything.',
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -409,86 +387,115 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   Widget _buildReviewsSection() {
+    final sku = widget.sku.isNotEmpty ? widget.sku : widget.name;
+    return Consumer<ReviewProvider>(
+      builder: (context, reviewProvider, _) {
+        final reviews = reviewProvider.getReviews(sku);
+        final count = reviews.length;
+        final avg = reviewProvider.getAverageRating(sku);
+        final preview = reviews.take(3).toList();
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(25, 16, 25, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Review ($count)',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _navyBlack),
+                  ),
+                  const Spacer(),
+                  const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFFC107)),
+                  const SizedBox(width: 4),
+                  Text(
+                    avg > 0 ? avg.toStringAsFixed(1) : widget.rating.toString(),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: _navyBlack),
+                  ),
+                  const SizedBox(width: 12),
+                  GestureDetector(
+                    onTap: () => _showWriteReviewSheet(context, reviewProvider, sku),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _blueOcean,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.edit_outlined, size: 14, color: Colors.white),
+                          SizedBox(width: 4),
+                          Text('Review', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              if (reviews.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        const Icon(Icons.rate_review_outlined, size: 40, color: Color(0xFFEDEDED)),
+                        const SizedBox(height: 8),
+                        const Text('No reviews yet', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: _darkGrey)),
+                        const SizedBox(height: 4),
+                        const Text('Be the first to review this product', style: TextStyle(fontSize: 12, color: _darkGrey)),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                ...preview.map((r) => _buildReviewItem(r)),
+              const SizedBox(height: 16),
+              if (count > 3)
+                GestureDetector(
+                  onTap: () => _showAllReviewsSheet(context, reviews),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: _navyBlack),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'See All $count Reviews',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: _navyBlack),
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildReviewItem(Review review) {
+    final initial = review.reviewerName.isNotEmpty ? review.reviewerName[0].toUpperCase() : '?';
     return Padding(
-      padding: const EdgeInsets.fromLTRB(25, 16, 25, 0),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: [
-              Text(
-                'Review (${widget.reviewCount})',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: _navyBlack,
-                ),
-              ),
-              const Spacer(),
-              const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFFC107)),
-              const SizedBox(width: 4),
-              Text(
-                widget.rating.toString(),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: _navyBlack,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          ..._reviews.map((r) => _buildReviewItem(r)),
-          const SizedBox(height: 16),
-          GestureDetector(
-            onTap: () {},
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: _navyBlack),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Text(
-                'See All Review',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: _navyBlack,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReviewItem(Map<String, dynamic> review) {
-    final rating = review['rating'] as int;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: Image.network(
-                  review['avatar'] as String,
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFFEDEDED)),
-                    child: const Icon(Icons.person, color: Colors.grey, size: 20),
+              Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFFE8EEF9)),
+                child: Center(
+                  child: Text(
+                    initial,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _blueOcean),
                   ),
                 ),
               ),
@@ -501,25 +508,18 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          review['name'] as String,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: _navyBlack,
-                          ),
+                          review.reviewerName,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: _navyBlack),
                         ),
-                        Text(
-                          review['date'] as String,
-                          style: const TextStyle(fontSize: 12, color: _darkGrey),
-                        ),
+                        Text(review.date, style: const TextStyle(fontSize: 12, color: _darkGrey)),
                       ],
                     ),
                     const SizedBox(height: 5),
                     Row(
                       children: List.generate(5, (i) => Icon(
-                        i < rating ? Icons.star_rounded : Icons.star_outline_rounded,
+                        i < review.rating ? Icons.star_rounded : Icons.star_outline_rounded,
                         size: 14,
-                        color: i < rating ? const Color(0xFFFFC107) : const Color(0xFFEDEDED),
+                        color: i < review.rating ? const Color(0xFFFFC107) : const Color(0xFFEDEDED),
                       )),
                     ),
                   ],
@@ -529,14 +529,93 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            review['comment'] as String,
-            style: const TextStyle(
-              fontSize: 12,
-              color: _navyBlack,
-              height: 1.67,
-            ),
+            review.comment,
+            style: const TextStyle(fontSize: 12, color: _navyBlack, height: 1.67),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showWriteReviewSheet(BuildContext context, ReviewProvider reviewProvider, String sku) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => _WriteReviewSheet(
+        onSubmit: (name, rating, comment) {
+          reviewProvider.addReview(
+            sku,
+            Review(
+              id: 'user_${DateTime.now().millisecondsSinceEpoch}',
+              reviewerName: name,
+              rating: rating,
+              comment: comment,
+              date: 'Just now',
+            ),
+          );
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Review submitted! Thank you.'),
+              backgroundColor: Color(0xFF3A9B7A),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showAllReviewsSheet(BuildContext context, List<Review> reviews) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        maxChildSize: 0.95,
+        minChildSize: 0.5,
+        expand: false,
+        builder: (_, controller) => Column(
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFEDEDED),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 16),
+              child: Row(
+                children: [
+                  Text(
+                    'All Reviews (${reviews.length})',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _navyBlack),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1, color: Color(0xFFEDEDED)),
+            Expanded(
+              child: ListView.builder(
+                controller: controller,
+                padding: const EdgeInsets.fromLTRB(25, 16, 25, 24),
+                itemCount: reviews.length,
+                itemBuilder: (_, i) => _buildReviewItem(reviews[i]),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -618,21 +697,30 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       persistedId = 'user_${DateTime.now().millisecondsSinceEpoch}';
       await prefs.setString('onesignal_external_id', persistedId);
     }
-    final existingId = await OneSignal.User.getExternalId();
-    if (existingId != persistedId) {
-      await OneSignal.login(persistedId);
-      print('🔑 [Auth] Logged in as: $persistedId');
-    }
+    await OneSignal.login(persistedId);
+    print('🔑 [Auth] Logged in as: $persistedId');
 
     await OneSignal.User.addTags({
       'availability': 'notify_me_requested',
       'product_name': sku,
+      'bis_requested_item_name': widget.name,
+      'bis_requested_item_number': sku,
     });
     try {
       await OneSignal.User.trackEvent('notify_me_requested', {'sku': sku});
       print('✅ [trackEvent] notify_me_requested fired, sku=$sku');
     } catch (e) {
       print('❌ [trackEvent] failed: $e');
+    }
+    try {
+      await OneSignal.User.trackEvent('bis_item_requested', {
+        'item_number': sku,
+        'item_name': widget.name,
+        'external_id': persistedId,
+      });
+      print('✅ [trackEvent] bis_item_requested fired, external_id=$persistedId, item_number=$sku, item_name=${widget.name}');
+    } catch (e) {
+      print('❌ [trackEvent] bis_item_requested failed: $e');
     }
     setState(() {
       _notifyRequested = true;
@@ -785,6 +873,200 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                     ),
                   ),
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _WriteReviewSheet extends StatefulWidget {
+  final void Function(String name, int rating, String comment) onSubmit;
+
+  const _WriteReviewSheet({required this.onSubmit});
+
+  @override
+  State<_WriteReviewSheet> createState() => _WriteReviewSheetState();
+}
+
+class _WriteReviewSheetState extends State<_WriteReviewSheet> {
+  static const _navyBlack = Color(0xFF0C1A30);
+  static const _blueOcean = Color(0xFF3669C9);
+  static const _darkGrey = Color(0xFF838589);
+
+  final _nameController = TextEditingController();
+  final _commentController = TextEditingController();
+  int _selectedRating = 0;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEDEDED),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(25, 16, 25, 4),
+              child: Text(
+                'Write a Review',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _navyBlack),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(25, 0, 25, 16),
+              child: Text(
+                'Share your experience to help others',
+                style: TextStyle(fontSize: 13, color: _darkGrey),
+              ),
+            ),
+            const Divider(height: 1, color: Color(0xFFEDEDED)),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(25, 20, 25, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Your Rating', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: _navyBlack)),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: List.generate(5, (i) {
+                      final filled = i < _selectedRating;
+                      return GestureDetector(
+                        onTap: () => setState(() => _selectedRating = i + 1),
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 6),
+                          child: Icon(
+                            filled ? Icons.star_rounded : Icons.star_outline_rounded,
+                            size: 36,
+                            color: filled ? const Color(0xFFFFC107) : const Color(0xFFEDEDED),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                  if (_selectedRating > 0)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(
+                        ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'][_selectedRating],
+                        style: const TextStyle(fontSize: 13, color: _blueOcean, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  const SizedBox(height: 20),
+                  const Text('Your Name', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: _navyBlack)),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter your name',
+                      hintStyle: const TextStyle(color: _darkGrey, fontSize: 14),
+                      filled: true,
+                      fillColor: const Color(0xFFFAFAFA),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Color(0xFFEDEDED)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Color(0xFFEDEDED)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: _blueOcean),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('Your Review', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: _navyBlack)),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _commentController,
+                    maxLines: 4,
+                    decoration: InputDecoration(
+                      hintText: 'Tell others what you think about this product...',
+                      hintStyle: const TextStyle(color: _darkGrey, fontSize: 14),
+                      filled: true,
+                      fillColor: const Color(0xFFFAFAFA),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Color(0xFFEDEDED)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Color(0xFFEDEDED)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: _blueOcean),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  GestureDetector(
+                    onTap: () {
+                      final name = _nameController.text.trim();
+                      final comment = _commentController.text.trim();
+                      if (_selectedRating == 0) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please select a rating'), behavior: SnackBarBehavior.floating),
+                        );
+                        return;
+                      }
+                      if (name.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please enter your name'), behavior: SnackBarBehavior.floating),
+                        );
+                        return;
+                      }
+                      if (comment.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please write a review'), behavior: SnackBarBehavior.floating),
+                        );
+                        return;
+                      }
+                      widget.onSubmit(name, _selectedRating, comment);
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: _blueOcean,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        'Submit Review',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
               ),
             ),
           ],
