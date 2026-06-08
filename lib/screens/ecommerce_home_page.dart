@@ -6,7 +6,8 @@ import 'product_detail_page.dart';
 import 'category_products_page.dart';
 import 'search_page.dart';
 import 'wishlist_page.dart';
-import 'login_screen.dart';
+import 'orders_page.dart';
+import 'account_page.dart';
 
 /// E-Commerce Home (unlogged) – replica of Figma design from screenshot.
 /// Header (Mega Mall blue), search ("Search Product Name"), promo banner (Gatis Ongkir),
@@ -762,7 +763,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
       (icon: Icons.home_outlined, label: 'HOME'),
       (icon: Icons.favorite_border, label: 'WISHLIST'),
       (icon: Icons.shopping_bag_outlined, label: 'ORDER'),
-      (icon: Icons.person_outline, label: 'LOGIN'),
+      (icon: Icons.person_outline, label: 'ACCOUNT'),
     ];
     return Container(
       decoration: BoxDecoration(
@@ -789,14 +790,14 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                   if (index == 2) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const CartPage()),
+                      MaterialPageRoute(builder: (_) => const OrdersPage()),
                     );
                     return;
                   }
                   if (index == 3) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      MaterialPageRoute(builder: (_) => const AccountPage()),
                     );
                     return;
                   }

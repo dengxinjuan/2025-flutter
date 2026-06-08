@@ -1,5 +1,33 @@
 # Full App Implementation Plan
-_Last updated: 2026-04-20_
+_Last updated: 2026-06-08_
+
+---
+
+## 📌 SESSION HANDOFF — Next To-Do (read this first)
+
+**Design principle (must follow):** The app is **guest-first** — never force login. Browse → add to cart → checkout → place order all work as a guest. Login is optional, only for cross-device sync (orders/wishlist).
+
+**Done recently (2026-06-08):**
+- ✅ Orders page built (`lib/screens/orders_page.dart`); ORDER tab now opens it (was CartPage)
+- ✅ Account page built (`lib/screens/account_page.dart`); bottom-nav `LOGIN → ACCOUNT`, guest-first (optional sign-in, never blocking)
+- ✅ Test account created (pre-confirmed): **`demo@megamall.com` / `Demo1234!`**
+- ✅ Wishlist→Supabase sync DONE (7.4): unique constraint + `WishlistProvider` sync (upsert/delete/load) + `main.dart` proxy wiring. Guests stay local; logged-in users sync. (Manual UI verify still pending.)
+
+**Supabase live data state:** `auth.users`=1, `profiles`=1, all other tables EMPTY (no orders placed while logged in yet; products not seeded; wishlist rows appear once a logged-in user taps a heart).
+
+**Why orders may look "missing" in Supabase:** guest orders are in-memory by design; they only persist to DB when logged in.
+
+**Next to-do (priority order):**
+1. **Products from Supabase** (7.3) — `products` table is EMPTY; app still uses hardcoded lists. Seed table + load from it.
+2. **Reviews migration** (7.2) — move `ReviewProvider` from local to `reviews` table.
+3. **Profile page** (2.2) — read/edit `profiles` (full_name, email) from the Account page.
+4. **Verify end-to-end** — log in as `demo@`, add a wishlist item (confirm `wishlists` row) and place an order (confirm `orders`/`order_items` rows).
+
+**Cleanup before production:** remove verbose OneSignal logging (`OSLogLevel.verbose` in `main.dart`).
+
+**Supabase project ref:** `qvsmvhvwedfjpxphrasa` · Dashboard: https://supabase.com/dashboard/project/qvsmvhvwedfjpxphrasa
+
+---
 
 ## Current State
 | What exists | Status |
@@ -20,7 +48,10 @@ _Last updated: 2026-04-20_
 | Global search + category search | ✅ Done |
 | Filter & Sorting sheet (price range, in-stock, sort) | ✅ Done |
 | Wishlist (WishlistProvider + WishlistPage + heart icons) | ✅ Done |
-| Orders page, Real backend, Payment integration | ❌ Missing |
+| Orders page (Supabase for logged-in, in-memory for guests) | ✅ Done |
+| Account page (guest-first, ACCOUNT bottom-nav tab) | ✅ Done |
+| Wishlist→Supabase sync (logged-in users; guests stay local) | ✅ Done |
+| Products from Supabase, Reviews migration, Profile page, Payment integration | ❌ Missing |
 
 ---
 
@@ -119,10 +150,12 @@ Everything else depends on this being in place first.
 - Stripe test mode is an option in the future if a real backend is hosted
 - **Future:** Stripe with test cards (4242 4242 4242 4242) if needed
 
-### 6.3 Orders page ❌ TODO (high priority for demo)
-- List of past orders pulled from Supabase (logged-in users)
-- Show order ID, date, total, payment method
-- Tap order → order detail with items + shipping info
+### 6.3 Orders page ✅ COMPLETE (lib/screens/orders_page.dart)
+- List of past orders pulled from Supabase (logged-in users), in-memory for guests
+- Shows order ID, date, total, payment method, item rows, status chip
+- ORDER tab now navigates to OrdersPage (was CartPage)
+- Pull-to-refresh + empty state (with Sign In CTA for guests)
+- Future: tap order → dedicated order detail screen
 
 ---
 
@@ -146,10 +179,12 @@ Everything else depends on this being in place first.
 - Replace hardcoded `_featuredProducts`, `_bestSellers` etc. with Supabase queries
 - Add loading skeletons while data fetches
 
-### 7.4 Wishlist sync ❌ (Supabase Phase 4)
-- `WishlistProvider` split: `loadFromSupabase(userId)` vs `loadGuest()`
-- On login: merge guest wishlist into Supabase via upsert
-- `toggle()` / `remove()` write to Supabase for auth users, SharedPreferences for guests
+### 7.4 Wishlist sync ✅ COMPLETE (Supabase Phase 4)
+- ✅ DB: unique constraint `wishlists_user_sku_unique (user_id, sku)` (RLS policy `wishlists_own` allows owner read/write)
+- ✅ `WishlistProvider` syncs to `public.wishlists`: `setUser(userId)`, `_pushLocalToCloud()` (upsert on login), `_loadFromCloud()`, write-through on `toggle()`/`remove()`/`clear()` via `onConflict: 'user_id,sku'`
+- ✅ Guest-first: guests stay SharedPreferences-only; only logged-in users sync to Supabase. Local load happens in the constructor; `setUser` awaits it before pushing.
+- ✅ Wired as `ChangeNotifierProxyProvider<AuthProvider, WishlistProvider>` in `main.dart` so login/logout drives `setUser`
+- ⬜ Manual verify still pending: log in as `demo@megamall.com`, tap a heart, confirm a row appears in `wishlists` (needs UI interaction in simulator)
 
 ---
 

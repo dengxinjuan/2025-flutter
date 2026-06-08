@@ -64,11 +64,13 @@ class MyApp extends StatelessWidget {
             return orders ?? OrderProvider();
           },
         ),
-        ChangeNotifierProvider(create: (_) {
-          final w = WishlistProvider();
-          w.load();
-          return w;
-        }),
+        ChangeNotifierProxyProvider<AuthProvider, WishlistProvider>(
+          create: (_) => WishlistProvider(),
+          update: (_, auth, wishlist) {
+            wishlist!.setUser(auth.isAuthenticated ? auth.userId : null);
+            return wishlist;
+          },
+        ),
         ChangeNotifierProvider(create: (_) {
           final r = ReviewProvider();
           r.load();
