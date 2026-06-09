@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
+import '../services/product_service.dart';
+import '../widgets/shimmer_box.dart';
 import 'cart_page.dart';
 import 'product_detail_page.dart';
 import 'category_products_page.dart';
@@ -31,251 +33,54 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     {'label': 'Comp', 'icon': Icons.computer, 'color': Color(0xFF4CAF50)},
   ];
 
-  // Featured products: Crocs collection
-  static const List<Map<String, dynamic>> _featuredProducts = [
-    {
-      'name': 'Crocs Classic Clog',
-      'price': '\$37.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
-      'rating': 4.8,
-      'reviews': 312,
-      'sku': 'classic_clog',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Pink Edition',
-      'price': '\$43.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400',
-      'rating': 4.9,
-      'reviews': 0,
-      'sku': 'pink_clogs',
-      'isComingSoon': true,
-    },
-    {
-      'name': 'Crocs Literide Pacer',
-      'price': '\$55.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
-      'rating': 4.7,
-      'reviews': 245,
-      'sku': 'literide_pacer',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Bayaband Clog',
-      'price': '\$34.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400',
-      'rating': 4.6,
-      'reviews': 198,
-      'sku': 'bayaband_clog',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Bistro Clog',
-      'price': '\$46.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400',
-      'rating': 4.5,
-      'reviews': 134,
-      'sku': 'bistro_clog',
-      'isComingSoon': false,
-    },
-  ];
-
   // Promo banner: Gatis Ongkir / Selama PPKM! / Periode Mei - Agustus 2021
   static const String kBannerImageUrl =
       'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800';
 
-  // Best Sellers: Crocs products
-  static const List<Map<String, dynamic>> _bestSellers = [
-    {
-      'name': 'Crocs Classic Clog',
-      'price': '\$37.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
-      'rating': 4.8,
-      'reviews': 312,
-      'sku': 'classic_clog',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Pink Edition',
-      'price': '\$43.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400',
-      'rating': 4.9,
-      'reviews': 0,
-      'sku': 'pink_clogs',
-      'isComingSoon': true,
-    },
-    {
-      'name': 'Crocs Literide Pacer',
-      'price': '\$55.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
-      'rating': 4.7,
-      'reviews': 245,
-      'sku': 'literide_pacer',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Baya Sandal',
-      'price': '\$27.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=400',
-      'rating': 4.5,
-      'reviews': 167,
-      'sku': 'baya_sandal',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Blue Clogs',
-      'price': '\$40.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400',
-      'rating': 4.7,
-      'reviews': 0,
-      'sku': 'blue_clogs',
-      'isComingSoon': true,
-    },
-    {
-      'name': 'Crocs Kids Classic',
-      'price': '\$21.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?w=400',
-      'rating': 4.8,
-      'reviews': 289,
-      'sku': 'kids_classic',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Classic Tie-Dye',
-      'price': '\$49.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400',
-      'rating': 4.7,
-      'reviews': 201,
-      'sku': 'tiedye_clog',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Reviva Sandal',
-      'price': '\$31.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1603487742131-4160ec999306?w=400',
-      'rating': 4.5,
-      'reviews': 112,
-      'sku': 'reviva_sandal',
-      'isComingSoon': false,
-    },
-  ];
+  // Product sections — loaded from Supabase (`products` table) on init.
+  // Each holds legacy card maps so the existing card widgets work unchanged.
+  List<Map<String, dynamic>> _featuredProducts = const [];
+  List<Map<String, dynamic>> _bestSellers = const [];
+  List<Map<String, dynamic>> _newArrivals = const [];
+  List<Map<String, dynamic>> _topRated = const [];
+  List<Map<String, dynamic>> _specialOffers = const [];
+  bool _loading = true;
+  bool _loadError = false;
 
-  // New Arrivals: latest Crocs products
-  static const List<Map<String, dynamic>> _newArrivals = [
-    {
-      'name': 'Crocs Echo Clog',
-      'price': '\$55.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
-      'rating': 4.8,
-      'reviews': 54,
-      'sku': 'echo_clog',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Neo Puff Clog',
-      'price': '\$81.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400',
-      'rating': 4.9,
-      'reviews': 28,
-      'sku': 'neo_puff_clog',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Getaway Flip',
-      'price': '\$27.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1523779105320-d1cd346ff52b?w=400',
-      'rating': 4.6,
-      'reviews': 73,
-      'sku': 'getaway_flip',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Blue Clogs',
-      'price': '\$40.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400',
-      'rating': 4.7,
-      'reviews': 0,
-      'sku': 'blue_clogs',
-      'isComingSoon': true,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
 
-  // Top Rated: highest rated Crocs products
-  static const List<Map<String, dynamic>> _topRated = [
-    {
-      'name': 'Crocs Literide 360',
-      'price': '\$62.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400',
-      'rating': 4.9,
-      'reviews': 501,
-      'sku': 'literide_360',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Classic Lined',
-      'price': '\$49.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400',
-      'rating': 4.8,
-      'reviews': 378,
-      'sku': 'classic_lined',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Crocband Clog',
-      'price': '\$34.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400',
-      'rating': 4.7,
-      'reviews': 422,
-      'sku': 'crocband_clog',
-      'isComingSoon': false,
-    },
-    {
-      'name': 'Crocs Classic Clog',
-      'price': '\$37.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
-      'rating': 4.8,
-      'reviews': 312,
-      'sku': 'classic_clog',
-      'isComingSoon': false,
-    },
-  ];
-
-  // Special Offers: discounted Crocs products
-  static const List<Map<String, dynamic>> _specialOffers = [
-    {
-      'name': 'Crocs Classic Clog',
-      'price': '\$27.99',
-      'originalPrice': '\$37.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',
-      'rating': 4.8,
-      'reviews': 312,
-      'sku': 'classic_clog_sale',
-      'isComingSoon': false,
-      'isSale': true,
-    },
-    {
-      'name': 'Crocs Baya Sandal',
-      'price': '\$18.99',
-      'originalPrice': '\$27.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=400',
-      'rating': 4.5,
-      'reviews': 167,
-      'sku': 'baya_sandal_sale',
-      'isComingSoon': false,
-      'isSale': true,
-    },
-    {
-      'name': 'Crocs Crocband Flip',
-      'price': '\$21.99',
-      'originalPrice': '\$31.99',
-      'imageUrl': 'https://images.unsplash.com/photo-1523779105320-d1cd346ff52b?w=400',
-      'rating': 4.6,
-      'reviews': 89,
-      'sku': 'crocband_flip_sale',
-      'isComingSoon': false,
-      'isSale': true,
-    },
-  ];
+  Future<void> _loadProducts() async {
+    final svc = ProductService.instance;
+    try {
+      final results = await Future.wait([
+        svc.featured(),
+        svc.bestSellers(),
+        svc.newArrivals(),
+        svc.topRated(),
+        svc.specialOffers(),
+      ]);
+      if (!mounted) return;
+      setState(() {
+        _featuredProducts = results[0];
+        _bestSellers = results[1];
+        _newArrivals = results[2];
+        _topRated = results[3];
+        _specialOffers = results[4];
+        _loading = false;
+        _loadError = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _loadError = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -588,7 +393,70 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     );
   }
 
+  /// Horizontal row of shimmer placeholders shown while products load.
+  Widget _buildSkeletonRow({required double height, required double cardWidth}) {
+    return SizedBox(
+      height: height,
+      child: Shimmer(
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          itemCount: 4,
+          itemBuilder: (context, index) {
+            return Container(
+              width: cardWidth,
+              margin: const EdgeInsets.only(right: 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ShimmerBox(height: height - 80, width: cardWidth, radius: 12),
+                  const SizedBox(height: 10),
+                  ShimmerBox(height: 12, width: cardWidth * 0.8),
+                  const SizedBox(height: 8),
+                  const ShimmerBox(height: 12, width: 60),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  /// Inline error state with a retry, shown in place of the first row.
+  Widget _buildErrorRow() {
+    return SizedBox(
+      height: 240,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.cloud_off, color: Color(0xFF9E9E9E), size: 40),
+            const SizedBox(height: 8),
+            const Text(
+              "Couldn't load products",
+              style: TextStyle(color: Color(0xFF666666), fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _loading = true;
+                  _loadError = false;
+                });
+                _loadProducts();
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildFeaturedProductList() {
+    if (_loading) return _buildSkeletonRow(height: 240, cardWidth: 160);
+    if (_loadError) return _buildErrorRow();
     return SizedBox(
       height: 240,
       child: ListView.builder(
@@ -629,6 +497,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   }
 
   Widget _buildBestSellersList() {
+    if (_loading) return _buildSkeletonRow(height: 260, cardWidth: 168);
     return SizedBox(
       height: 260,
       child: ListView.builder(
@@ -672,6 +541,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   }
 
   Widget _buildProductSection(List<Map<String, dynamic>> products) {
+    if (_loading) return _buildSkeletonRow(height: 260, cardWidth: 168);
     return SizedBox(
       height: 260,
       child: ListView.builder(
@@ -715,6 +585,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   }
 
   Widget _buildSpecialOffersList() {
+    if (_loading) return _buildSkeletonRow(height: 280, cardWidth: 168);
     return SizedBox(
       height: 280,
       child: ListView.builder(

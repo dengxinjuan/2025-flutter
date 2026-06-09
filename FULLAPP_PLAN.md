@@ -17,11 +17,15 @@ _Last updated: 2026-06-08_
 
 **Why orders may look "missing" in Supabase:** guest orders are in-memory by design; they only persist to DB when logged in.
 
+**Done recently (2026-06-09):**
+- ✅ **Products from Supabase (7.3) DONE** — seeded `products` table with all 49 products (46 category items + 3 sale variants); home sections encoded as `tags` (featured/best_seller/new_arrival/top_rated/special_offer), category pages by `category` column (sale variants use category `Offers` so they only appear in Special Offers). Added `lib/models/product.dart` (`Product.fromMap` + `toCardMap` legacy shape), `lib/services/product_service.dart`, and dependency-free shimmer skeletons (`lib/widgets/shimmer_box.dart`). Home page, category page, and search page now load from Supabase with loading/error+retry states. Seed counts verified to match the old hardcoded data exactly. `flutter analyze` clean (no new issues).
+- ✅ **Ran the app on iPhone 16 Pro Max simulator** — Supabase init OK, no errors. Home page Featured row rendered live Supabase data in the expected `review_count`-desc order (Classic Clog $37.99 → Literide Pacer $55.99 → Bayaband $34.99); shimmer skeleton showed during load. All other sections/categories share the same `ProductService` + card path (DB counts already verified), so the refactor is confirmed end-to-end. Deeper UI driving (taps/scroll into category pages) was not done — would need `idb` (not installed); `simctl` alone can't tap/scroll.
+- ⬜ **Not committed yet** — today's changes (new model/service/widget + refactored home/category/search) are uncommitted. Also note the pre-existing uncommitted app-icon/splash assets from Phase 10 are still in the working tree.
+
 **Next to-do (priority order):**
-1. **Products from Supabase** (7.3) — `products` table is EMPTY; app still uses hardcoded lists. Seed table + load from it.
-2. **Reviews migration** (7.2) — move `ReviewProvider` from local to `reviews` table.
-3. **Profile page** (2.2) — read/edit `profiles` (full_name, email) from the Account page.
-4. **Verify end-to-end** — log in as `demo@`, add a wishlist item (confirm `wishlists` row) and place an order (confirm `orders`/`order_items` rows).
+1. **Reviews migration** (7.2) — move `ReviewProvider` from local to `reviews` table.
+2. **Profile page** (2.2) — read/edit `profiles` (full_name, email) from the Account page.
+3. **Verify end-to-end** — log in as `demo@`, add a wishlist item (confirm `wishlists` row) and place an order (confirm `orders`/`order_items` rows). Also visually confirm products render from Supabase in the simulator.
 
 **Cleanup before production:** remove verbose OneSignal logging (`OSLogLevel.verbose` in `main.dart`).
 
@@ -51,7 +55,8 @@ _Last updated: 2026-06-08_
 | Orders page (Supabase for logged-in, in-memory for guests) | ✅ Done |
 | Account page (guest-first, ACCOUNT bottom-nav tab) | ✅ Done |
 | Wishlist→Supabase sync (logged-in users; guests stay local) | ✅ Done |
-| Products from Supabase, Reviews migration, Profile page, Payment integration | ❌ Missing |
+| Products from Supabase (home/category/search load from `products` table + shimmer skeletons) | ✅ Done |
+| Reviews migration, Profile page, Payment integration | ❌ Missing |
 
 ---
 
@@ -173,11 +178,13 @@ Everything else depends on this being in place first.
 - `ReviewProvider.loadReviews(sku)` → query Supabase lazily per SKU
 - Remove `SharedPreferences` dependency from `ReviewProvider`
 
-### 7.3 Products from Supabase ❌ (Supabase Phase 3)
-- Seed product data into `public.products` table
-- Create `lib/models/product.dart` + `lib/services/product_service.dart`
-- Replace hardcoded `_featuredProducts`, `_bestSellers` etc. with Supabase queries
-- Add loading skeletons while data fetches
+### 7.3 Products from Supabase ✅ COMPLETE (Supabase Phase 3)
+- ✅ Seeded `public.products` with all 49 products. Home sections → `tags` array (`featured`, `best_seller`, `new_arrival`, `top_rated`, `special_offer`); category pages → `category` column. The 3 sale variants use category `Offers` so they only surface in Special Offers (preserves prior behavior).
+- ✅ `lib/models/product.dart` — `Product.fromMap(row)` + `toCardMap()` reproduces the legacy `Map<String,dynamic>` card shape so existing card/detail widgets are unchanged.
+- ✅ `lib/services/product_service.dart` — `featured()/bestSellers()/newArrivals()/topRated()/specialOffers()`, `categoryCards(category)`, `allCards()`. Public-read RLS keeps it guest-first.
+- ✅ Home page (`ecommerce_home_page.dart`) loads all sections in `initState` via `Future.wait`; category page loads by category; search page loads `allCards()`.
+- ✅ Loading skeletons via dependency-free `lib/widgets/shimmer_box.dart` (`Shimmer` + `ShimmerBox`); error states have a Retry button.
+- ✅ Verified: seed counts match old hardcoded data; `flutter analyze` clean.
 
 ### 7.4 Wishlist sync ✅ COMPLETE (Supabase Phase 4)
 - ✅ DB: unique constraint `wishlists_user_sku_unique (user_id, sku)` (RLS policy `wishlists_own` allows owner read/write)

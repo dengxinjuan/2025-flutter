@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'category_products_page.dart' show allProducts;
+import '../services/product_service.dart';
 import 'product_detail_page.dart';
 
 class SearchPage extends StatefulWidget {
@@ -17,10 +17,33 @@ class _SearchPageState extends State<SearchPage> {
   final _controller = TextEditingController();
   String _query = '';
 
+  List<Map<String, dynamic>> _allProducts = const [];
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    try {
+      final cards = await ProductService.instance.allCards();
+      if (!mounted) return;
+      setState(() {
+        _allProducts = cards;
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+    }
+  }
+
   List<Map<String, dynamic>> get _results {
     if (_query.trim().isEmpty) return [];
     final q = _query.trim().toLowerCase();
-    return allProducts
+    return _allProducts
         .where((p) => (p['name'] as String).toLowerCase().contains(q))
         .toList();
   }
@@ -68,9 +91,11 @@ class _SearchPageState extends State<SearchPage> {
       ),
       body: _query.trim().isEmpty
           ? _buildEmptyPrompt()
-          : results.isEmpty
-              ? _buildNoResults()
-              : _buildResults(results),
+          : _loading
+              ? const Center(child: CircularProgressIndicator())
+              : results.isEmpty
+                  ? _buildNoResults()
+                  : _buildResults(results),
     );
   }
 
